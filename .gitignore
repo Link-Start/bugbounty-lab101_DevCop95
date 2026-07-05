@@ -1,6 +1,9 @@
-# ── Pentesting Lab — artefactos generados ────────────────────────────
-# Objetivo: no commitear output ruidoso de escaneo. La evidencia real
-# (reportes .md, ficheros FINDING_*.md) SÍ se versiona.
+# ── Pentesting Lab — generated artifacts ────────────────────────────
+# Goal: don't commit noisy scan output. Real evidence
+# (reports .md, FINDING_*.md files) IS versioned.
+
+# T3MP3ST integration (separate repo, updated via git pull in t3mp3st/)
+t3mp3st/
 
 # Logs y daemons
 *.log

@@ -79,6 +79,39 @@ Before submitting, read [`docs/hackerone-workflow.md`](docs/hackerone-workflow.m
 
 ---
 
+## T3MP3ST — AI-Powered War Room
+
+This lab integrates [T3MP3ST](https://github.com/DevCop95/T3MP3ST) as its offensive security engine — a multi-agent framework that turns your AI coding agent into a zero-day hunter.
+
+### Setup
+
+```bash
+# 1. Configure API keys
+cp t3mp3st/.env.example t3mp3st/.env
+# Edit t3mp3st/.env with your LLM provider key(s)
+
+# 2. Start the server
+./start-server.sh
+# War Room → http://127.0.0.1:3333/ui/
+```
+
+### What T3MP3ST provides
+
+| Feature | Description |
+|---------|-------------|
+| War Room UI | Web interface for mission planning and execution |
+| Recon Engine | nmap, DNS, HTTP fingerprinting — 90.1% pass@1 on XBEN |
+| Exploit Loop | 8-operator kill chain (Recon → Scanner → Exploiter → ...) |
+| Payload DB | 200+ payloads (SQLi, XSS, SSTI, LFI, SSRF, CMDi, XXE) |
+| MCP Server | `node t3mp3st/dist/mcp-server.js` for agent integration |
+| Evidence Vault | Persistent findings, evidence, and retest tracking |
+
+### Keyless mode
+
+T3MP3ST works without API keys by connecting your local AI agent (Claude Code, Codex, Hermes). In the War Room UI, open **Settings** and connect your agent — then describe targets in plain English.
+
+---
+
 ## Main Commands
 
 <div align="center">
@@ -95,6 +128,8 @@ Before submitting, read [`docs/hackerone-workflow.md`](docs/hackerone-workflow.m
 | `pentest.sh search <function>` | Search for a tool | `pentest.sh search sql_injection` |
 | `pentest.sh express <url>` | Express scan | `pentest.sh express https://target.com` |
 | `pentest.sh install` | Install missing tools | `pentest.sh install` |
+| `./start-server.sh` | Start T3MP3ST War Room (AI-powered) | `./start-server.sh` |
+| `npm run server` | Start T3MP3ST from t3mp3st/ dir | `cd t3mp3st && npm run server` |
 
 </div>
 
