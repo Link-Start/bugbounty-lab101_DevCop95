@@ -1,9 +1,9 @@
 #!/bin/bash
 # ============================================
-# Tool Checker - Verificador de Herramientas Kali
+# Tool Checker - Kali Tool Verifier
 # ============================================
-# Verifica qué herramientas están instaladas
-# y recomienda instalación de faltantes
+# Verify which tools are installed
+# and recommend installation of missing ones
 # ============================================
 
 set -e
@@ -20,7 +20,7 @@ echo "║              KALI TOOL CHECKER v1.0                         ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-# Categorías de herramientas
+# Tool categories
 declare -A CATEGORIES=(
     [RECON]="nmap masscan zmap dnsrecon theHarvester amass recon-ng whois dig host httpx katana gau nuclei"
     [DNS]="subfinder sublist3r fierce subbrute dnsgen gotator dnsenum dnsmap"
@@ -52,12 +52,12 @@ declare -A CATEGORIES=(
     [SECRETS]="gitleaks trufflehog detect_secrets gitrob"
 )
 
-# Colores por estado
+# Colors by status
 INSTALLED=0
 MISSING=0
 TOTAL=0
 
-echo "=== Verificación de Herramientas ==="
+echo "=== Tool Verification ==="
 echo ""
 
 for category in "${!CATEGORIES[@]}"; do
@@ -76,28 +76,28 @@ for category in "${!CATEGORIES[@]}"; do
     echo ""
 done
 
-# Resumen
+# Summary
 echo "═══════════════════════════════════════════════════════════════"
-echo -e "Total: ${CYAN}$TOTAL${NC} herramientas"
-echo -e "Instaladas: ${GREEN}$INSTALLED${NC}"
-echo -e "Faltantes: ${RED}$MISSING${NC}"
+echo -e "Total: ${CYAN}$TOTAL${NC} tools"
+echo -e "Installed: ${GREEN}$INSTALLED${NC}"
+echo -e "Missing: ${RED}$MISSING${NC}"
 echo ""
 
-# Porcentaje
+# Percentage
 PERCENT=$((INSTALLED * 100 / TOTAL))
 if [ $PERCENT -ge 80 ]; then
-    echo -e "${GREEN}Excelente: $PERCENT% de herramientas instaladas${NC}"
+    echo -e "${GREEN}Excellent: $PERCENT% of tools installed${NC}"
 elif [ $PERCENT -ge 50 ]; then
-    echo -e "${YELLOW}Bueno: $PERCENT% de herramientas instaladas${NC}"
+    echo -e "${YELLOW}Good: $PERCENT% of tools installed${NC}"
 else
-    echo -e "${RED}Necesita mejoras: $PERCENT% de herramientas instaladas${NC}"
+    echo -e "${RED}Needs improvement: $PERCENT% of tools installed${NC}"
 fi
 
 echo ""
-echo "=== Herramientas Faltantes ==="
+echo "=== Missing Tools ==="
 echo ""
 
-# Recomendar instalación
+# Recommend installation
 MISSING_TOOLS=""
 for category in "${!CATEGORIES[@]}"; do
     for tool in ${CATEGORIES[$category]}; do
@@ -108,21 +108,21 @@ for category in "${!CATEGORIES[@]}"; do
 done
 
 if [ -n "$MISSING_TOOLS" ]; then
-    echo "Para instalar las herramientas faltantes ejecuta:"
+    echo "To install missing tools run:"
     echo ""
     echo -e "${CYAN}sudo apt install$MISSING_TOOLS${NC}"
     echo ""
-    echo "O instala por categoría:"
+    echo "Or install by category:"
     echo ""
-    echo "  Reconocimiento:  sudo apt install amass theharvester recon-ng"
+    echo "  Reconnaissance: sudo apt install amass theharvester recon-ng"
     echo "  Web:             sudo apt install wfuzz ffuf xsser wpscan"
-    echo "  Enumeración:     sudo apt install enum4linux smbclient"
-    echo "  Fuerza bruta:    sudo apt install hydra medusa john hashcat"
-    echo "  Explotación:     sudo apt install metasploit-framework"
-    echo "  Post-explotación: sudo apt install crackmapexec impacket-scripts"
+    echo "  Enumeration:     sudo apt install enum4linux smbclient"
+    echo "  Brute force:     sudo apt install hydra medusa john hashcat"
+    echo "  Exploitation:    sudo apt install metasploit-framework"
+    echo "  Post-exploitation: sudo apt install crackmapexec impacket-scripts"
     echo "  Wireless:        sudo apt install wifite reaver bully"
     echo "  Forensics:       sudo apt install autopsy sleuthkit binwalk foremost"
     echo "  Reversing:       sudo apt install ghidra radare2"
 else
-    echo -e "${GREEN}¡Todas las herramientas están instaladas!${NC}"
+    echo -e "${GREEN}All tools are installed!${NC}"
 fi

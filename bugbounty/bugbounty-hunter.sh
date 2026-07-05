@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================
-# Bug Bounty Hunter - Framework Completo
+# Bug Bounty Hunter - Complete Framework
 # ============================================
 
 CYAN='\033[0;36m'
@@ -22,7 +22,7 @@ RESEARCHER="${BB_RESEARCHER:-dev101x}"
 mkdir -p "$REPORTS_DIR" "$TARGETS_DIR" "$NOTES_DIR" "$PROGRAMS_DIR"
 
 # ============================================
-# FUNCIONES PRINCIPALES
+# MAIN FUNCTIONS
 # ============================================
 
 print_banner() {
@@ -37,10 +37,10 @@ print_banner() {
 # ============================================
 # SCOPE SAFETY CHECK
 # ============================================
-# Antes de tocar un target, exige un archivo de scope en programs/.
-# Esto evita testear activos fuera del alcance autorizado de un programa
-# de HackerOne (violar el scope puede anular la recompensa o el acceso
-# al programa). Usa `new` para crear el archivo de scope de un programa.
+# Before touching a target, requires a scope file in programs/.
+# This prevents testing assets outside the authorized scope of a program
+# from HackerOne (violating scope can void the bounty or access
+# to the program). Use 'new' to create a program scope file.
 
 check_scope() {
     local TARGET="$1"
@@ -48,13 +48,13 @@ check_scope() {
     local f
 
     if [ -z "$TARGET" ]; then
-        echo -e "${RED}[!] Falta el target${NC}"
+        echo -e "${RED}[!] Target is missing${NC}"
         return 1
     fi
 
-    # Solo cuenta como "in scope" si el target aparece dentro de la sección
-    # "## In Scope" del archivo — un match en cualquier otra parte (email de
-    # contacto, URL del handle, notas, etc.) NO cuenta como scope válido.
+    # Only counts as "in scope" if the target appears within the
+    # "## In Scope" section of the file — a match in any other part (contact
+    # email, handle URL, notes, etc.) does NOT count as valid scope.
     for f in "$PROGRAMS_DIR"/*.md; do
         [ -f "$f" ] || continue
         [ "$(basename "$f")" = "_template.md" ] && continue
@@ -65,28 +65,28 @@ check_scope() {
     done
 
     if [ -z "$MATCH" ]; then
-        echo -e "${RED}[!] No hay archivo de scope para '$TARGET' en $PROGRAMS_DIR${NC}"
-        echo -e "${YELLOW}    Crea uno primero:  $0 new <nombre-programa>${NC}"
-        echo -e "${YELLOW}    y agrega '$TARGET' a su sección 'In Scope'.${NC}"
+        echo -e "${RED}[!] No scope file for '$TARGET' in $PROGRAMS_DIR${NC}"
+        echo -e "${YELLOW}    Create one first:  $0 new <program-name>${NC}"
+        echo -e "${YELLOW}    and add '$TARGET' to its 'In Scope' section.${NC}"
         if [ "$FORCE" != "1" ]; then
-            echo -e "${RED}    Abortando. Solo usa FORCE=1 si tienes autorización explícita fuera de un programa formal.${NC}"
+            echo -e "${RED}    Aborting. Only use FORCE=1 if you have explicit authorization outside a formal program.${NC}"
             return 1
         fi
-        echo -e "${YELLOW}    FORCE=1 activo, continuando sin archivo de scope.${NC}"
+        echo -e "${YELLOW}    FORCE=1 active, continuing without scope file.${NC}"
         return 0
     fi
 
     if awk '/## Out of Scope/{flag=1; next} /^## /{flag=0} flag' "$MATCH" | grep -qF -- "$TARGET"; then
-        echo -e "${RED}[!] '$TARGET' está listado como OUT OF SCOPE en $MATCH. Abortando.${NC}"
+        echo -e "${RED}[!] '$TARGET' is listed as OUT OF SCOPE in $MATCH. Aborting.${NC}"
         return 1
     fi
 
-    echo -e "${GREEN}[✓] Scope OK — $TARGET cubierto por $(basename "$MATCH")${NC}"
+    echo -e "${GREEN}[✓] Scope OK — $TARGET covered by $(basename "$MATCH")${NC}"
     return 0
 }
 
 # ============================================
-# CREAR PROGRAMA (scope tracker)
+# CREATE PROGRAM (scope tracker)
 # ============================================
 
 new_program() {
@@ -95,42 +95,42 @@ new_program() {
     local DEST="$PROGRAMS_DIR/$NAME.md"
 
     if [ -z "$NAME" ]; then
-        echo -e "${RED}Uso: $0 new <nombre-programa>${NC}"
+        echo -e "${RED}Usage: $0 new <program-name>${NC}"
         return 1
     fi
 
     if [ -f "$DEST" ]; then
-        echo -e "${YELLOW}[!] Ya existe: $DEST${NC}"
+        echo -e "${YELLOW}[!] Already exists: $DEST${NC}"
         return 1
     fi
 
     if [ -f "$TEMPLATE" ]; then
         cp "$TEMPLATE" "$DEST"
-        sed -i "s/\[Nombre del Programa\]/$NAME/" "$DEST" 2>/dev/null
+        sed -i "s/\[Program Name\]/$NAME/" "$DEST" 2>/dev/null
     else
         printf '# %s\n\n## In Scope\n- \n\n## Out of Scope\n- \n' "$NAME" > "$DEST"
     fi
 
-    echo -e "${GREEN}[✓] Programa creado: $DEST${NC}"
-    echo -e "${YELLOW}    Edítalo y agrega los dominios/assets en 'In Scope' antes de escanear.${NC}"
+    echo -e "${GREEN}[✓] Program created: $DEST${NC}"
+    echo -e "${YELLOW}    Edit it and add domains/assets in 'In Scope' before scanning.${NC}"
 }
 
 # ============================================
-# DETECCIÓN DE DNS HIJACKING / BLOQUEO A NIVEL RED
+# DNS HIJACKING / NETWORK-LEVEL BLOCKING DETECTION
 # ============================================
-# Algunas redes (ISP/país) redirigen categorías completas de dominios
-# (apuestas, adultos, streaming, etc.) a una IP sinkhole en vez de resolver
-# el dominio real. Si no se detecta, cualquier scanner termina "auditando"
-# el sinkhole en vez del target real. Compara el resolver local contra DNS
-# público (8.8.8.8 / 1.1.1.1) antes de lanzar recon contra un dominio nuevo,
-# sobre todo en nichos de apuestas/adulto/streaming.
+# Some networks (ISP/country) redirect complete categories of domains
+# (gambling, adult, streaming, etc.) to an IP sinkhole instead of resolving
+# the real domain. If undetected, any scanner ends up "auditing"
+# the sinkhole instead of the real target. Compare local resolver against public
+# DNS (8.8.8.8 / 1.1.1.1) before launching recon against a new domain,
+# especially in gambling/adult/streaming niches.
 
 resolve_check() {
     local HOST="$1"
     local LOCAL_IPS PUBLIC_IPS FIRST_PUBLIC_IP LOCAL_PROBE
 
     if [ -z "$HOST" ]; then
-        echo -e "${RED}Uso: $0 resolve <host>${NC}"
+        echo -e "${RED}Usage: $0 resolve <host>${NC}"
         return 1
     fi
 
@@ -138,22 +138,22 @@ resolve_check() {
     PUBLIC_IPS=$( { timeout 5 dig +short @8.8.8.8 "$HOST" A 2>/dev/null; timeout 5 dig +short @1.1.1.1 "$HOST" A 2>/dev/null; } | sort -u)
     FIRST_PUBLIC_IP=$(echo "$PUBLIC_IPS" | head -1)
 
-    echo -e "${YELLOW}DNS local:${NC}  $(echo "$LOCAL_IPS" | tr '\n' ' ')"
-    echo -e "${YELLOW}DNS público (8.8.8.8+1.1.1.1):${NC} $(echo "$PUBLIC_IPS" | tr '\n' ' ')"
+    echo -e "${YELLOW}Local DNS:${NC}  $(echo "$LOCAL_IPS" | tr '\n' ' ')"
+    echo -e "${YELLOW}Public DNS (8.8.8.8+1.1.1.1):${NC} $(echo "$PUBLIC_IPS" | tr '\n' ' ')"
 
     if [ -z "$LOCAL_IPS" ] || [ -z "$PUBLIC_IPS" ]; then
-        echo -e "${YELLOW}[!] No se pudo comparar (alguna consulta no respondió).${NC}"
+        echo -e "${YELLOW}[!] Could not compare (some query did not respond).${NC}"
         return 1
     fi
 
-    # Servicios con anycast/round-robin (GitHub, Cloudflare, etc.) devuelven
-    # IPs distintas a resolvers distintos sin que eso sea un hijack, así que
-    # un IP-set distinto NO basta como señal. La señal fuerte es el
-    # CONTENIDO: si la IP local redirige/sirve una página de bloqueo
-    # (dominio .gov, o palabras como blocked/restricted/warning/ilegal),
-    # es un sinkhole real, no solo balanceo de carga. Un sinkhole puede
-    # además cerrar el puerto 443 sin responder — probamos HTTP:80 como
-    # respaldo en ese caso en vez de asumir que "sin respuesta" es limpio.
+    # Services with anycast/round-robin (GitHub, Cloudflare, etc.) return
+    # different IPs to different resolvers without that being a hijack, so
+    # a different IP set is NOT sufficient as a signal. The strong signal is
+    # CONTENT: if the local IP redirects/serves a blocking page
+    # (.gov domain, or words like blocked/restricted/warning/illegal),
+    # it's a real sinkhole, not just load balancing. A sinkhole may
+    # also close port 443 without responding — we test HTTP:80 as
+    # fallback in that case instead of assuming "no response" is clean.
     local first_local="$(echo "$LOCAL_IPS" | head -1)"
     LOCAL_PROBE=$(timeout 8 curl -s -D - -o /tmp/resolve_check_body_$$ -m 6 --resolve "$HOST:443:$first_local" "https://$HOST/" 2>/dev/null)
     LOCAL_PROBE="$LOCAL_PROBE $(cat /tmp/resolve_check_body_$$ 2>/dev/null)"
@@ -166,26 +166,26 @@ resolve_check() {
     fi
 
     if echo "$LOCAL_PROBE" | grep -qiE '\.gov(\.[a-z]{2})?[/"'\''>]|blocked|restricted|illegal|advertencia|coljuegos|regulat'; then
-        echo -e "${RED}[!] La IP local sirve/redirige a lo que parece una página de bloqueo (dominio .gov o keywords de censura).${NC}"
-        echo -e "${RED}    Esto SÍ es un sinkhole de red (ISP/país), no el sitio real.${NC}"
-        echo -e "${YELLOW}    Usa la IP pública con curl: curl --resolve $HOST:443:$FIRST_PUBLIC_IP https://$HOST/${NC}"
+        echo -e "${RED}[!] The local IP serves/redirects to what appears to be a blocking page (.gov domain or censorship keywords).${NC}"
+        echo -e "${RED}    This IS a network sinkhole (ISP/country), not the real site.${NC}"
+        echo -e "${YELLOW}    Use the public IP with curl: curl --resolve $HOST:443:$FIRST_PUBLIC_IP https://$HOST/${NC}"
         return 1
     fi
 
     if [ -z "$LOCAL_PROBE" ] || [ "$(echo "$LOCAL_PROBE" | tr -d '[:space:]')" = "" ]; then
-        echo -e "${YELLOW}[!] La IP local no respondió ni por 443 ni por 80 — inconcluso, no asumas que está limpio.${NC}"
-        echo -e "${YELLOW}    Si el dominio es de un nicho sensible (apuestas/adultos/streaming), usa la IP pública igual:${NC}"
+        echo -e "${YELLOW}[!] The local IP did not respond on 443 or 80 — inconclusive, do not assume it is clean.${NC}"
+        echo -e "${YELLOW}    If the domain is in a sensitive niche (gambling/adult/streaming), use the public IP anyway:${NC}"
         echo -e "${YELLOW}    curl --resolve $HOST:443:$FIRST_PUBLIC_IP https://$HOST/${NC}"
         return 1
     fi
 
-    echo -e "${GREEN}[✓] Sin señales de página de bloqueo — la resolución local parece confiable.${NC}"
-    [ "$LOCAL_IPS" != "$PUBLIC_IPS" ] && echo -e "${YELLOW}    (IPs distintas entre local y público — normal en CDN/anycast, no es alarma por sí solo)${NC}"
+    echo -e "${GREEN}[✓] No signs of blocking page — local resolution appears trustworthy.${NC}"
+    [ "$LOCAL_IPS" != "$PUBLIC_IPS" ] && echo -e "${YELLOW}    (Different IPs between local and public — normal for CDN/anycast, not alarming by itself)${NC}"
     return 0
 }
 
 # ============================================
-# FASE 1: RECONOCIMIENTO PROFUNDO
+# PHASE 1: DEEP RECONNAISSANCE
 # ============================================
 
 reconnaissance() {
@@ -194,7 +194,7 @@ reconnaissance() {
     
     mkdir -p "$OUTPUT_DIR"
     
-    echo -e "${CYAN}[1/8] RECONOCIMIENTO PROFUNDO - $TARGET${NC}"
+    echo -e "${CYAN}[1/8] DEEP RECONNAISSANCE - $TARGET${NC}"
     
     echo -e "${YELLOW}[1.1] Subdomain Enumeration${NC}"
     subfinder -d "$TARGET" -o "$OUTPUT_DIR/subdomains.txt" 2>/dev/null
@@ -202,7 +202,7 @@ reconnaissance() {
     sort -u "$OUTPUT_DIR/subdomains.txt" -o "$OUTPUT_DIR/subdomains.txt"
     
     SUBS=$(wc -l < "$OUTPUT_DIR/subdomains.txt")
-    echo -e "${GREEN}  ✓ $SUBS subdominios encontrados${NC}"
+    echo -e "${GREEN}  ✓ $SUBS subdomains found${NC}"
     
     echo -e "${YELLOW}[1.2] HTTP probing${NC}"
     httpx -l "$OUTPUT_DIR/subdomains.txt" -o "$OUTPUT_DIR/httpx.txt" -silent 2>/dev/null
@@ -218,11 +218,11 @@ reconnaissance() {
     echo -e "${YELLOW}[1.5] Parameter discovery${NC}"
     cat "$OUTPUT_DIR/wayback.txt" | grep "?" | unfurl keys | sort -u > "$OUTPUT_DIR/params.txt" 2>/dev/null
     
-    echo -e "${GREEN}[✓] Reconocimiento completado${NC}"
+    echo -e "${GREEN}[✓] Reconnaissance completed${NC}"
 }
 
 # ============================================
-# FASE 2: ESCANEO DE VULNERABILIDADES
+# PHASE 2: VULNERABILITY SCANNING
 # ============================================
 
 vuln_scan() {
@@ -231,7 +231,7 @@ vuln_scan() {
     
     mkdir -p "$OUTPUT_DIR"
     
-    echo -e "${CYAN}[2/8] ESCANEO DE VULNERABILIDADES${NC}"
+    echo -e "${CYAN}[2/8] VULNERABILITY SCANNING${NC}"
     
     echo -e "${YELLOW}[2.1] Nuclei scan${NC}"
     echo "https://$TARGET" | nuclei -severity critical,high,medium -o "$OUTPUT_DIR/nuclei.txt" -silent 2>/dev/null
@@ -256,11 +256,11 @@ vuln_scan() {
     echo -e "${YELLOW}[2.7] IDOR detection${NC}"
     nuclei -u "https://$TARGET" -t nuclei-templates/http/vulnerabilities/idor* -o "$OUTPUT_DIR/idor.txt" -silent 2>/dev/null
     
-    echo -e "${GREEN}[✓] Escaneo de vulnerabilidades completado${NC}"
+    echo -e "${GREEN}[✓] Vulnerability scanning completed${NC}"
 }
 
 # ============================================
-# FASE 3: FUERZA BRUTA AVANZADA
+# PHASE 3: ADVANCED BRUTE FORCE
 # ============================================
 
 advanced_bruteforce() {
@@ -269,7 +269,7 @@ advanced_bruteforce() {
     
     mkdir -p "$OUTPUT_DIR"
     
-    echo -e "${CYAN}[3/8] FUERZA BRUTA AVANZADA${NC}"
+    echo -e "${CYAN}[3/8] ADVANCED BRUTE FORCE${NC}"
     
     echo -e "${YELLOW}[3.1] Directory fuzzing${NC}"
     feroxbuster -u "https://$TARGET" -w /usr/share/wordlists/seclists/Discovery/Web-Content/raft-large-directories.txt -o "$OUTPUT_DIR/dirs.txt" -q 2>/dev/null
@@ -280,11 +280,11 @@ advanced_bruteforce() {
     echo -e "${YELLOW}[3.3] Parameter fuzzing${NC}"
     ffuf -u "https://$TARGET/FUZZ" -w /usr/share/wordlists/seclists/Discovery/Web-Content/common.txt -o "$OUTPUT_DIR/ffuf.txt" -q 2>/dev/null
     
-    echo -e "${GREEN}[✓] Fuerza bruta completada${NC}"
+    echo -e "${GREEN}[✓] Brute force completed${NC}"
 }
 
 # ============================================
-# FASE 4: SECRETS Y API KEYS
+# PHASE 4: SECRETS AND API KEYS
 # ============================================
 
 secrets_hunting() {
@@ -293,7 +293,7 @@ secrets_hunting() {
     
     mkdir -p "$OUTPUT_DIR"
     
-    echo -e "${CYAN}[4/8] HUNTING DE SECRETOS${NC}"
+    echo -e "${CYAN}[4/8] SECRET HUNTING${NC}"
     
     echo -e "${YELLOW}[4.1] JS secrets${NC}"
     cat "$OUTPUT_DIR/../recon/js_endpoints.txt" 2>/dev/null | while read url; do
@@ -301,18 +301,18 @@ secrets_hunting() {
     done
     
     echo -e "${YELLOW}[4.2] GitHub dorking${NC}"
-    echo "Repositorios públicos con secretos:"
+    echo "Public repositories with secrets:"
     echo "  - site:github.com \"$TARGET\" password"
     echo "  - site:github.com \"$TARGET\" api_key"
     echo "  - site:github.com \"$TARGET\" secret"
     
     echo -e "${YELLOW}[4.3] Cloud bucket enumeration${NC}"
-    echo "Verificar buckets S3/Azure/GCP:"
+    echo "Check S3/Azure/GCP buckets:"
     echo "  - https://$TARGET.s3.amazonaws.com"
     echo "  - https://$TARGET.blob.core.windows.net"
     echo "  - https://storage.googleapis.com/$TARGET"
     
-    echo -e "${GREEN}[✓] Hunting de secretos completado${NC}"
+    echo -e "${GREEN}[✓] Secret hunting completed${NC}"
 }
 
 # ============================================
@@ -324,17 +324,17 @@ business_logic() {
     
     echo -e "${CYAN}[5/8] BUSINESS LOGIC TESTING${NC}"
     
-    echo -e "${YELLOW}Áreas a investigar:${NC}"
-    echo "  1. Flujo de autenticación (login, registro, recuperación)"
-    echo "  2. Cambio de roles/permisos"
-    echo "  3. Rate limiting en acciones sensibles"
-    echo "  4. Lógica de pagos/descuentos"
-    echo "  5. Manipulación de parámetros ocultos"
+    echo -e "${YELLOW}Areas to investigate:${NC}"
+    echo "  1. Authentication flow (login, registration, recovery)"
+    echo "  2. Role/permission changes"
+    echo "  3. Rate limiting on sensitive actions"
+    echo "  4. Payment/discount logic"
+    echo "  5. Hidden parameter manipulation"
     echo "  6. Race conditions"
     echo "  7. Mass assignment"
     echo "  8. IDOR en endpoints no obvios"
     
-    echo -e "${GREEN}[✓] Business logic checklist generado${NC}"
+    echo -e "${GREEN}[✓] Business logic checklist generated${NC}"
 }
 
 # ============================================
@@ -356,7 +356,7 @@ api_testing() {
     for path in /swagger.json /openapi.json /api-docs /swagger-ui.html /graphql; do
         STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://$TARGET$path" 2>/dev/null)
         if [ "$STATUS" = "200" ]; then
-            echo -e "${GREEN}  ✓ Documentación API encontrada: $path${NC}"
+            echo -e "${GREEN}  ✓ API documentation found: $path${NC}"
             curl -s "https://$TARGET$path" >> "$OUTPUT_DIR/api_docs.json"
         fi
     done
@@ -364,7 +364,7 @@ api_testing() {
     echo -e "${YELLOW}[6.3] GraphQL introspection${NC}"
     curl -s -X POST "https://$TARGET/graphql" -H "Content-Type: application/json" -d '{"query":"{__schema{types{name,fields{name}}}}"}' > "$OUTPUT_DIR/graphql_schema.json" 2>/dev/null
     
-    echo -e "${GREEN}[✓] API testing completado${NC}"
+    echo -e "${GREEN}[✓] API testing completed${NC}"
 }
 
 # ============================================
@@ -374,9 +374,9 @@ api_testing() {
 chain_attacks() {
     local TARGET="$1"
     
-    echo -e "${CYAN}[7/8] Cadenas de Ataque${NC}"
+    echo -e "${CYAN}[7/8] Attack Chains${NC}"
     
-    echo -e "${YELLOW}Combinaciones de alto impacto:${NC}"
+    echo -e "${YELLOW}High-impact combinations:${NC}"
     echo ""
     echo "  1. CORS + CSRF → Account takeover"
     echo "  2. XSS + Cookie theft → Session hijacking"
@@ -389,7 +389,7 @@ chain_attacks() {
 }
 
 # ============================================
-# FASE 8: REPORTE Y DISCLOSURE
+# PHASE 8: REPORT AND DISCLOSURE
 # ============================================
 
 generate_report() {
@@ -398,7 +398,7 @@ generate_report() {
     local REPORT_FILE="$OUTPUT_DIR/report-$(date +%Y%m%d).md"
 
     mkdir -p "$OUTPUT_DIR"
-    echo -e "${CYAN}[8/8] GENERACIÓN DE REPORTE${NC}"
+    echo -e "${CYAN}[8/8] REPORT GENERATION${NC}"
 
     cat > "$REPORT_FILE" << 'EOF'
 # Bug Bounty Report
@@ -407,7 +407,7 @@ generate_report() {
 HackerOne
 
 ## Program
-[Nombre del programa H1]
+[H1 program name]
 
 ## Researcher
 RESEARCHER_PLACEHOLDER
@@ -419,7 +419,7 @@ TARGET_PLACEHOLDER
 DATE_PLACEHOLDER
 
 ## H1 Report URL
-[Se completa después de enviar - hackerone.com/reports/xxxxx]
+[Filled after submission - hackerone.com/reports/xxxxx]
 
 ## Executive Summary
 [Brief description of the finding]
@@ -462,7 +462,7 @@ EOF
     sed -i "s/DATE_PLACEHOLDER/$(date -Iseconds)/" "$REPORT_FILE"
     sed -i "s/RESEARCHER_PLACEHOLDER/$RESEARCHER/" "$REPORT_FILE"
 
-    echo -e "${GREEN}[✓] Reporte generado: $REPORT_FILE${NC}"
+    echo -e "${GREEN}[✓] Report generated: $REPORT_FILE${NC}"
 }
 
 # ============================================
@@ -471,10 +471,10 @@ EOF
 
 show_platforms() {
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
-    echo -e "${CYAN}  PLATAFORMAS BUG BOUNTY${NC}"
+    echo -e "${CYAN}  BUG BOUNTY PLATFORMS${NC}"
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo -e "${YELLOW}Plataformas principales:${NC}"
+    echo -e "${YELLOW}Main platforms:${NC}"
     echo "  1. HackerOne    - https://hackerone.com"
     echo "  2. Bugcrowd     - https://bugcrowd.com"
     echo "  3. Intigriti    - https://intigriti.com"
@@ -482,7 +482,7 @@ show_platforms() {
     echo "  5. Synack       - https://synack.com"
     echo "  6. Cobalt       - https://cobalt.io"
     echo ""
-    echo -e "${YELLOW}Programas destacados:${NC}"
+    echo -e "${YELLOW}Featured programs:${NC}"
     echo "  - Google VRP      - https://bughunters.google.com"
     echo "  - Apple           - https://security.apple.com"
     echo "  - Microsoft       - https://msrc.microsoft.com"
@@ -502,17 +502,17 @@ zeroday_research() {
     echo -e "${CYAN}  0-DAY RESEARCH METHODOLOGY${NC}"
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo -e "${YELLOW}Pasos para encontrar 0-days:${NC}"
+    echo -e "${YELLOW}Steps to find 0-days:${NC}"
     echo ""
     echo "  1. TARGET SELECTION"
-    echo "     - Software open source con gran uso"
-    echo "     - Frameworks populares"
-    echo "     - Aplicaciones críticas"
+    echo "     - Widely used open source software"
+    echo "     - Popular frameworks"
+    echo "     - Critical applications"
     echo ""
     echo "  2. CODE REVIEW"
-    echo "     - Auditar código fuente manualmente"
-    echo "     - Usar herramientas estáticas (Semgrep, CodeQL)"
-    echo "     - Buscar patrones peligrosos"
+    echo "     - Manually audit source code"
+    echo "     - Use static analysis tools (Semgrep, CodeQL)"
+    echo "     - Search for dangerous patterns"
     echo ""
     echo "  3. FUZZING"
     echo "     - AFL++, LibFuzzer, Honggfuzz"
@@ -529,7 +529,7 @@ zeroday_research() {
     echo "     - Impact assessment"
     echo "     - Remediation suggestions"
     echo ""
-    echo -e "${GREEN}Herramientas para 0-day research:${NC}"
+    echo -e "${GREEN}Tools for 0-day research:${NC}"
     echo "  - Semgrep      - Static analysis"
     echo "  - CodeQL       - Semantic code analysis"
     echo "  - AFL++        - Fuzzing"
@@ -552,17 +552,17 @@ encoding_bypass() {
     echo -e "${CYAN}[9/9] ENCODING BYPASS TECHNIQUES${NC}"
     
     echo -e "${YELLOW}[9.1] Base64 Encoding${NC}"
-    echo "  Payloads para bypass de WAF:"
+    echo "  Payloads for WAF bypass:"
     echo ""
     echo "  LFI:"
     echo "    Original: url/?f=etc/passwd (403)"
     echo "    Encoded:  url/?f=L2V0Yy9wYXNzd2Q= (200)"
     echo ""
-    echo "  Comando para codificar:"
+    echo "  Command to encode:"
     echo "    echo -n 'etc/passwd' | base64"
-    echo "    Resultado: ZXRjL3Bhc3N3ZA=="
+    echo "  Result: ZXRjL3Bhc3N3ZA=="
     echo ""
-    echo "  Payloads comunes:"
+    echo "  Common payloads:"
     echo "    /etc/passwd        => ZXRjL3Bhc3N3ZA=="
     echo "    /etc/shadow        => ZXRjL3NoYWRvdw=="
     echo "    /etc/hosts         => ZXRjL2hvc3Rz"
@@ -613,7 +613,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.5] Mixed Encoding Attacks${NC}"
-    echo "  Combinaciones para bypass:"
+    echo "  Combinations for bypass:"
     echo ""
     echo "  SQL Injection:"
     echo "    ' OR 1=1 --"
@@ -667,7 +667,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.9] Encoding Tools${NC}"
-    echo "  Herramientas útiles:"
+    echo "  Useful tools:"
     echo ""
     echo "  Base64:"
     echo "    echo -n 'payload' | base64"
@@ -682,7 +682,7 @@ encoding_bypass() {
     echo "    echo 'hex' | xxd -r -p"
     echo ""
     
-    echo -e "${GREEN}[✓] Encoding bypass techniques listadas${NC}"
+    echo -e "${GREEN}[✓] Encoding bypass techniques listed${NC}"
 }
 
 # ============================================
@@ -736,7 +736,7 @@ case "${1:-help}" in
     full)
         TARGET="$2"
         if [ -z "$TARGET" ]; then
-            echo -e "${RED}Uso: $0 full <domain>${NC}"
+            echo -e "${RED}Usage: $0 full <domain>${NC}"
             exit 1
         fi
         check_scope "$TARGET" || exit 1
@@ -752,24 +752,24 @@ case "${1:-help}" in
         ;;
     *)
         echo ""
-        echo "Uso: $0 <comando> [target]"
+        echo "Usage: $0 <command> [target]"
         echo ""
-        echo "Comandos:"
-        echo "  new <programa>    - Crear archivo de scope para un programa H1"
-        echo "  scope <domain>    - Verificar si un target está en scope"
-        echo "  resolve <host>    - Detectar DNS hijack/bloqueo (local vs 8.8.8.8)"
-        echo "  full <domain>     - Pipeline completo (recon->report)"
-        echo "  recon <domain>    - Solo reconocimiento"
-        echo "  vuln <domain>     - Solo vulnerabilidades"
-        echo "  brute <domain>    - Solo fuerza bruta"
-        echo "  secrets <domain>  - Solo secretos"
-        echo "  api <domain>      - Solo APIs"
+        echo "Commands:"
+        echo "  new <program>     - Create scope file for an H1 program"
+        echo "  scope <domain>    - Check if a target is in scope"
+        echo "  resolve <host>    - Detect DNS hijack/blocking (local vs 8.8.8.8)"
+        echo "  full <domain>     - Complete pipeline (recon->report)"
+        echo "  recon <domain>    - Reconnaissance only"
+        echo "  vuln <domain>     - Vulnerabilities only"
+        echo "  brute <domain>    - Brute force only"
+        echo "  secrets <domain>  - Secrets only"
+        echo "  api <domain>      - APIs only"
         echo "  encode <domain>   - Encoding bypass techniques"
-        echo "  report <domain>   - Generar reporte"
-        echo "  platforms         - Ver plataformas"
-        echo "  zeroday           - Metodología 0-day"
+        echo "  report <domain>   - Generate report"
+        echo "  platforms         - View platforms"
+        echo "  zeroday           - 0-day methodology"
         echo ""
-        echo "Researcher actual: $RESEARCHER (cambia con BB_RESEARCHER=handle)"
+        echo "Current researcher: $RESEARCHER (change with BB_RESEARCHER=handle)"
         echo "Scope tracker: $PROGRAMS_DIR"
         echo ""
         ;;

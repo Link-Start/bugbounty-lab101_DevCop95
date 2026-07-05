@@ -12,7 +12,7 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-# Configuración por defecto
+# Default configuration
 BURP_HOST="localhost"
 BURP_PORT="1337"
 
@@ -21,23 +21,23 @@ show_help() {
     echo -e "${CYAN}║           Burp Suite Integration - Shell Wrapper            ║${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo "Uso: $0 <comando> [opciones]"
+    echo "Usage: $0 <command> [options]"
     echo ""
-    echo "Comandos:"
-    echo "  status              - Estado de Burp"
-    echo "  proxy on/off        - Habilitar/deshabilitar proxy"
-    echo "  proxy history       - Ver historial del proxy"
-    echo "  target add <url>    - Agregar URL al target"
-    echo "  target scope        - Ver scope del target"
-    echo "  spider <url>        - Iniciar spider"
-    echo "  scan <url>          - Escaneo activo"
-    echo "  issues              - Ver hallazgos"
-    echo "  issues export       - Exportar hallazgos"
-    echo "  repeater <url>      - Enviar a Repeater"
-    echo "  launch              - Lanzar Burp Suite"
-    echo "  config              - Ver configuración"
+    echo "Commands:"
+    echo "  status              - Burp status"
+    echo "  proxy on/off        - Enable/disable proxy"
+    echo "  proxy history       - View proxy history"
+    echo "  target add <url>    - Add URL to target"
+    echo "  target scope        - View target scope"
+    echo "  spider <url>        - Start spider"
+    echo "  scan <url>          - Active scan"
+    echo "  issues              - View findings"
+    echo "  issues export       - Export findings"
+    echo "  repeater <url>      - Send to Repeater"
+    echo "  launch              - Launch Burp Suite"
+    echo "  config              - View configuration"
     echo ""
-    echo "Ejemplos:"
+    echo "Examples:"
     echo "  $0 status"
     echo "  $0 proxy on"
     echo "  $0 target add https://ejemplo.com"
@@ -54,9 +54,9 @@ check_burp_running() {
 }
 
 launch_burp() {
-    echo -e "${YELLOW}Lanzando Burp Suite...${NC}"
+    echo -e "${YELLOW}Launching Burp Suite...${NC}"
     
-    # Buscar Burp Suite
+    # Find Burp Suite
     BURP_PATHS=(
         "/usr/bin/burpsuite"
         "/opt/BurpSuiteCommunity/burpsuite"
@@ -67,46 +67,46 @@ launch_burp() {
     
     for path in "${BURP_PATHS[@]}"; do
         if [ -f "$path" ] || [ -f "$path.sh" ]; then
-            echo -e "${GREEN}Encontrado: $path${NC}"
+            echo -e "${GREEN}Found: $path${NC}"
             "$path" &
-            echo -e "${GREEN}Burp Suite lanzado${NC}"
-            echo -e "${YELLOW}Recuerda habilitar la API: Burp → Settings → Burp API → Enable${NC}"
+            echo -e "${GREEN}Burp Suite launched${NC}"
+            echo -e "${YELLOW}Remember to enable the API: Burp → Settings → Burp API → Enable${NC}"
             return 0
         fi
     done
     
-    # Intentar con comando
+    # Try with command
     if command -v burpsuite &>/dev/null; then
         burpsuite &
-        echo -e "${GREEN}Burp Suite lanzado${NC}"
+        echo -e "${GREEN}Burp Suite launched${NC}"
         return 0
     fi
     
-    echo -e "${RED}No se encontró Burp Suite${NC}"
+    echo -e "${RED}Burp Suite not found${NC}"
     return 1
 }
 
 show_config() {
-    echo -e "${CYAN}Configuración actual:${NC}"
+    echo -e "${CYAN}Current configuration:${NC}"
     echo "  Host: $BURP_HOST"
     echo "  Port: $BURP_PORT"
     echo "  API URL: http://$BURP_HOST:$BURP_PORT/burp/api"
     echo ""
     
     if check_burp_running; then
-        echo -e "${GREEN}✓ Burp Suite está corriendo${NC}"
+        echo -e "${GREEN}✓ Burp Suite is running${NC}"
     else
-        echo -e "${RED}✗ Burp Suite NO está corriendo${NC}"
-        echo "  Ejecuta: $0 launch"
+        echo -e "${RED}✗ Burp Suite is NOT running${NC}"
+        echo "  Run: $0 launch"
     fi
 }
 
-# Verificar si Burp está corriendo
+# Check if Burp is running
 if ! check_burp_running && [ "$1" != "launch" ] && [ "$1" != "config" ] && [ "$1" != "help" ] && [ "$1" != "--help" ]; then
-    echo -e "${RED}Burp Suite no está corriendo${NC}"
-    echo -e "${YELLOW}Ejecuta: $0 launch${NC}"
+    echo -e "${RED}Burp Suite is not running${NC}"
+    echo -e "${YELLOW}Run: $0 launch${NC}"
     echo ""
-    read -p "¿Lanzar Burp Suite ahora? (s/n): " -n 1 -r
+    read -p "Launch Burp Suite now? (y/n): " -n 1 -r
     echo ""
     if [[ $REPLY =~ ^[Ss]$ ]]; then
         launch_burp
@@ -114,7 +114,7 @@ if ! check_burp_running && [ "$1" != "launch" ] && [ "$1" != "config" ] && [ "$1
     fi
 fi
 
-# Ejecutar comando
+# Execute command
 case "${1:-help}" in
     status)
         python3 "$PYTHON" --host "$BURP_HOST" --port "$BURP_PORT" status

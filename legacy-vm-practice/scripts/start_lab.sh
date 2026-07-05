@@ -1,42 +1,42 @@
 #!/bin/bash
 # ============================================
-# Iniciar lab de pentesting
+# Start pentesting lab
 # ============================================
 
 set -e
 
-echo "[*] Iniciando lab de pentesting..."
+echo "[*] Starting pentesting lab..."
 echo ""
 
-# Verificar que VirtualBox esté instalado
+# Check that VirtualBox is installed
 if ! command -v VBoxManage &> /dev/null; then
-    echo "[-] VirtualBox no encontrado. Instálalo primero."
+    echo "[-] VirtualBox not found. Install it first."
     exit 1
 fi
 
-# Listar VMs disponibles
-echo "[*] VMs disponibles:"
+# List available VMs
+echo "[*] Available VMs:"
 VBoxManage list vms | grep -E "Metasploitable|DVWA|OWASP|Windows|Debian"
 echo ""
 
-# Función para iniciar VM
+# Function to start VM
 start_vm() {
     local vm_name="$1"
     local vm_state=$(VBoxManage showvminfo "$vm_name" --machinereadable 2>/dev/null | grep "VMState=" | cut -d'"' -f2)
     
     if [ "$vm_state" = "running" ]; then
-        echo "[+] $vm_name ya está corriendo"
+        echo "[+] $vm_name is already running"
     else
-        echo "[*] Iniciando $vm_name..."
-        VBoxManage startvm "$vm_name" --type headless 2>/dev/null || echo "[-] No se pudo iniciar $vm_name"
+        echo "[*] Starting $vm_name..."
+        VBoxManage startvm "$vm_name" --type headless 2>/dev/null || echo "[-] Could not start $vm_name"
     fi
 }
 
-# Iniciar VMs del lab
-echo "[*] Iniciando VMs del lab..."
+# Start lab VMs
+echo "[*] Starting lab VMs..."
 echo ""
 
-# Intentar iniciar cada VM (ignorar si no existe)
+# Try to start each VM (ignore if not found)
 for vm in "Metasploitable2" "Metasploitable" "DVWA" "OWASP_BWA" "Windows XP" "Windows 7"; do
     VBoxManage showvminfo "$vm" &>/dev/null && start_vm "$vm" &
 done
@@ -44,17 +44,17 @@ done
 wait
 
 echo ""
-echo "[*] Esperando a que las VMs estén listas..."
+echo "[*] Waiting for VMs to be ready..."
 sleep 10
 
 echo ""
 echo "============================================"
-echo "LAB INICIADO"
+echo "LAB STARTED"
 echo "============================================"
 echo ""
-echo "Verificar con: ./verify_lab.sh"
+echo "Verify with: ./verify_lab.sh"
 echo ""
-echo "IPs del lab:"
+echo "Lab IPs:"
 echo "  Kali:       192.168.56.100"
 echo "  Metasploit: 192.168.56.200"
 echo "  DVWA:       http://192.168.56.201"

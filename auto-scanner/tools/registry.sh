@@ -1,13 +1,13 @@
 #!/bin/bash
 # ============================================
-# Tool Registry - Base de Datos de Herramientas Kali
+# Tool Registry - Kali Tool Database
 # ============================================
-# Registry relacional de herramientas categorizadas
-# Uso: source tools/registry.sh
+# Relational registry of categorized tools
+# Usage: source tools/registry.sh
 # ============================================
 
 # ============================================
-# CATEGORÍA 1: RECONOCIMIENTO
+# CATEGORY 1: RECONNAISSANCE
 # ============================================
 
 declare -A TOOLS_RECON
@@ -261,7 +261,7 @@ TOOLS_RECON[caido]="recon|iot|proxy|modern|fast|6-9|https://caido.io"
 TOOLS_RECON[burpsuite]="recon|iot|proxy|scanner|intruder|8-10|https://portswigger.net/burp"
 
 # ============================================
-# CATEGORÍA 2: ESCANEO WEB
+# CATEGORY 2: WEB SCANNING
 # ============================================
 
 declare -A TOOLS_WEB
@@ -275,7 +275,7 @@ TOOLS_WEB[ffuf]="web|fuzzer|fast|filter|5-8|https://github.com/ffuf/ffuf"
 TOOLS_WEB[cariddi]="web|crawler|link_extract|parameter_find|4-7|https://github.com/s0md3v/cariddi"
 
 # ============================================
-# CATEGORÍA 3: EXPLOTACIÓN WEB
+# CATEGORY 3: WEB EXPLOITATION
 # ============================================
 
 declare -A TOOLS_EXPLOIT_WEB
@@ -347,7 +347,7 @@ TOOLS_EXPLOIT_WEB[weevely]="exploit_web|webshell|php|backdoor|5-8|https://github
 TOOLS_EXPLOIT_WEB[phpmeterpreter]="exploit_web|webshell|php|meterpreter|6-9|part_of_metasploit"
 
 # ============================================
-# CATEGORÍA 4: FUERZA BRUTA
+# CATEGORY 4: BRUTE FORCE
 # ============================================
 
 declare -A TOOLS_BRUTE
@@ -360,7 +360,7 @@ TOOLS_BRUTE[cewl]="brute|wordlist_gen|website_crawl|custom_wordlist|4-7|https://
 TOOLS_BRUTE[crunch]="brute|wordlist_gen|pattern_based|3-6|https://sourceforge.net/projects/crunch-wordlist/"
 
 # ============================================
-# CATEGORÍA 5: ENUMERACIÓN
+# CATEGORY 5: ENUMERATION
 # ============================================
 
 declare -A TOOLS_ENUM
@@ -569,7 +569,7 @@ TOOLS_ENUM[autoRecon]="enum|user|osint|multi_threaded|service_scan|6-9|https://g
 TOOLS_ENUM[reconftw]="enum|user|osint|full_pipeline|multi_tool|7-10|https://github.com/six2dez/reconftw"
 
 # ============================================
-# CATEGORÍA 6: EXPLOTACIÓN
+# CATEGORY 6: EXPLOITATION
 # ============================================
 
 declare -A TOOLS_EXPLOIT
@@ -689,7 +689,7 @@ TOOLS_EXPLOIT[daft]="exploit|ad|delegations|abuse|6-9|https://github.com/fox-it/
 TOOLS_EXPLOIT[dangerous-spnc]="exploit|ad|spn|roast|kerberoast|6-9|https://github.com/dirkjanm/krbrelayx"
 
 # ============================================
-# CATEGORÍA 7: POST-EXPLOTACIÓN
+# CATEGORY 7: POST-EXPLOITATION
 # ============================================
 
 declare -A TOOLS_POST
@@ -785,7 +785,7 @@ TOOLS_POST[cmdkey]="post|info_gathering|credential|stored|list|2-4|builtin"
 TOOLS_POST[vaultcmd]="post|info_gathering|credential|vault|list|3-5|builtin"
 
 # ============================================
-# CATEGORÍA 8: ANÁLISIS DE TRÁFICO
+# CATEGORY 8: TRAFFIC ANALYSIS
 # ============================================
 
 declare -A TOOLS_TRAFFIC
@@ -797,7 +797,7 @@ TOOLS_TRAFFIC[responder]="traffic|llmnr|nbtns|poisoning|7-10|https://github.com/
 TOOLS_TRAFFIC[mitmproxy]="traffic|proxy|intercept|modify|6-9|https://mitmproxy.org"
 
 # ============================================
-# CATEGORÍA 9: WIRELESS
+# CATEGORY 9: WIRELESS
 # ============================================
 
 declare -A TOOLS_WIRELESS
@@ -809,7 +809,7 @@ TOOLS_WIRELESS[reaver]="wireless|wifi|wps|pixie_dust|5-8|https://github.com/t6x/
 TOOLS_WIRELESS[fern]="wireless|wifi|gui|auto_attack|5-8|https://github.com/savio-code/fern-wifi-cracker"
 
 # ============================================
-# CATEGORÍA 10: SNIFFING & SPOOFING
+# CATEGORY 10: SNIFFING & SPOOFING
 # ============================================
 
 declare -A TOOLS_SNIFF
@@ -819,7 +819,7 @@ TOOLS_SNIFF[macchanger]="sniff|mac|spoof|change|3-5|https://github.com/alobbs/ma
 TOOLS_SNIFF[arpoison]="sniff|arp|poison|redirect|4-6|https://github.com/infamy/arpoison"
 
 # ============================================
-# CATEGORÍA 11: SOCIAL ENGINEERING
+# CATEGORY 11: SOCIAL ENGINEERING
 # ============================================
 
 declare -A TOOLS_SOCIAL
@@ -828,7 +828,7 @@ TOOLS_SOCIAL[king-phisher]="social|phishing|campaign|template|6-9|https://github
 TOOLS_SOCIAL[gophish]="social|phishing|campaign|analytics|5-8|https://github.com/gophish/gophish"
 
 # ============================================
-# CATEGORÍA 12: FORENSICS & LOGS
+# CATEGORY 12: FORENSICS & LOGS
 # ============================================
 
 declare -A TOOLS_FORENSICS
@@ -839,7 +839,7 @@ TOOLS_FORENSICS[foremost]="forensics|file_recovery|carve|3-6|https://github.com/
 TOOLS_FORENSICS[sleuthkit]="forensics|disk|filesystem|timeline|6-9|https://www.sleuthkit.org"
 
 # ============================================
-# CATEGORÍA 13: PASSWORD ATTACKS
+# CATEGORY 13: PASSWORD ATTACKS
 # ============================================
 
 declare -A TOOLS_PASSWORD
@@ -849,7 +849,7 @@ TOOLS_PASSWORD[mimikatz]="password|windows|credential_dump|kerberos|8-10|https:/
 TOOLS_PASSWORD[lazagne]="password|credential_dump|browser|wifi|6-9|https://github.com/AlessandroZ/LaZagne"
 
 # ============================================
-# CATEGORÍA 14: REVERSING
+# CATEGORY 14: REVERSING
 # ============================================
 
 declare -A TOOLS_REVERSING
@@ -861,13 +861,13 @@ TOOLS_REVERSING[objdump]="reversing|disassemble|binary|3-6|builtin"
 TOOLS_REVERSING[file]="reversing|identify|magic|type|1-4|builtin"
 
 # ============================================
-# FUNCIONES DE CONSULTA
+# QUERY FUNCTIONS
 # ============================================
 
-# Buscar herramientas por categoría
+# Search tools by category
 search_by_category() {
     local category="$1"
-    echo "=== Herramientas en categoría: $category ==="
+    echo "=== Tools in category: $category ==="
     for registry in TOOLS_RECON TOOLS_WEB TOOLS_EXPLOIT_WEB TOOLS_BRUTE TOOLS_ENUM TOOLS_EXPLOIT TOOLS_POST TOOLS_TRAFFIC TOOLS_WIRELESS TOOLS_SNIFF TOOLS_SOCIAL TOOLS_FORENSICS TOOLS_PASSWORD TOOLS_REVERSING; do
         for tool in "${!registry[@]}"; do
             IFS='|' read -r cat type func extra risk url <<< "${registry[$tool]}"
@@ -878,10 +878,10 @@ search_by_category() {
     done
 }
 
-# Buscar herramientas por función
+# Search tools by function
 search_by_function() {
     local function="$1"
-    echo "=== Herramientas para: $function ==="
+    echo "=== Tools for: $function ==="
     for registry in TOOLS_RECON TOOLS_WEB TOOLS_EXPLOIT_WEB TOOLS_BRUTE TOOLS_ENUM TOOLS_EXPLOIT TOOLS_POST TOOLS_TRAFFIC TOOLS_WIRELESS TOOLS_SNIFF TOOLS_SOCIAL TOOLS_FORENSICS TOOLS_PASSWORD TOOLS_REVERSING; do
         for tool in "${!registry[@]}"; do
             IFS='|' read -r cat type func extra risk url <<< "${registry[$tool]}"
@@ -892,21 +892,21 @@ search_by_function() {
     done
 }
 
-# Verificar si una herramienta está instalada
+# Verify if a tool is installed
 check_tool() {
     local tool="$1"
     if command -v "$tool" &>/dev/null; then
-        echo "[✓] $tool: INSTALADA"
+        echo "[✓] $tool: INSTALLED"
         return 0
     else
-        echo "[✗] $tool: NO INSTALADA"
+        echo "[✗] $tool: NOT INSTALLED"
         return 1
     fi
 }
 
-# Verificar todas las herramientas
+# Verify all tools
 check_all_tools() {
-    echo "=== Verificación de Herramientas ==="
+    echo "=== Tool Verification ==="
     echo ""
     local installed=0
     local missing=0
@@ -921,51 +921,51 @@ check_all_tools() {
         done
     done
     
-    echo "Instaladas: $installed"
-    echo "Faltantes: $missing"
+    echo "Installed: $installed"
+    echo "Missing: $missing"
 }
 
-# Obtener recomendación por nivel
+# Get recommendation by level
 recommend_by_level() {
     local level="$1"  # low, medium, high, critical
-    echo "=== Recomendaciones para nivel: $level ==="
+    echo "=== Recommendations for level: $level ==="
     
     case $level in
         low)
-            echo "Usar: nmap, whatweb, dig, host, whois"
+            echo "Use: nmap, whatweb, dig, host, whois"
             ;;
         medium)
-            echo "Usar: nikto, gobuster, enum4linux, hydra"
+            echo "Use: nikto, gobuster, enum4linux, hydra"
             ;;
         high)
-            echo "Usar: sqlmap, metasploit, responder, crackmapexec"
+            echo "Use: sqlmap, metasploit, responder, crackmapexec"
             ;;
         critical)
-            echo "Usar: meterpreter, mimikatz, empire, impacket"
+            echo "Use: meterpreter, mimikatz, empire, impacket"
             ;;
     esac
 }
 
-# Generar matriz de herramientas por fase
+# Generate tool matrix by phase
 generate_matrix() {
-    echo "=== MATRIZ DE HERRAMIENTAS POR FASE DE PENTEST ==="
+    echo "=== TOOL MATRIX BY PENTEST PHASE ==="
     echo ""
-    echo "FASE 1: RECONOCIMIENTO"
+    echo "PHASE 1: RECONNAISSANCE"
     echo "  nmap, dnsrecon, theHarvester, amass, recon-ng"
     echo ""
-    echo "FASE 2: ESCANEO"
+    echo "PHASE 2: SCANNING"
     echo "  nikto, whatweb, gobuster, dirb, wfuzz"
     echo ""
-    echo "FASE 3: ENUMERACIÓN"
+    echo "PHASE 3: ENUMERATION"
     echo "  enum4linux, smbclient, ldapsearch, rpcclient"
     echo ""
-    echo "FASE 4: EXPLOTACIÓN"
+    echo "PHASE 4: EXPLOITATION"
     echo "  sqlmap, metasploit, searchsploit, msfvenom"
     echo ""
-    echo "FASE 5: POST-EXPLOTACIÓN"
+    echo "PHASE 5: POST-EXPLOITATION"
     echo "  meterpreter, crackmapexec, impacket, chisel"
     echo ""
-    echo "FASE 6: EXFILTRACIÓN"
+    echo "PHASE 6: EXFILTRATION"
     echo "  chisel, socat, netcat, meterpreter"
 }
 

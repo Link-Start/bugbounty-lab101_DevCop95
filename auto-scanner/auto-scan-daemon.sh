@@ -1,14 +1,14 @@
 #!/bin/bash
 # ============================================
-# Auto-Scan Daemon - Integración Threat Intel + Auto Scanner
+# Auto-Scan Daemon - Threat Intel Integration + Auto Scanner
 # ============================================
-# Cuando detecta nuevos CVEs o amenazas críticas,
-# ejecuta escaneos automáticos contra targets
+# When it detects new CVEs or critical threats,
+# it runs automatic scans against targets
 # ============================================
 
 set -e
 
-# Configuración
+# Configuration
 FEED_URL="https://raw.githubusercontent.com/DevCop95/cYHBernews/refs/heads/main/noticias.json"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DATA_DIR="$SCRIPT_DIR/threat-intel"
@@ -20,7 +20,7 @@ CONFIG_FILE="$SCRIPT_DIR/daemon.conf"
 
 mkdir -p "$DATA_DIR" "$REPORT_DIR" "$LOG_DIR"
 
-# Colores
+# Colors
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -28,15 +28,15 @@ YELLOW='\033[1;33m'
 MAGENTA='\033[0;35m'
 NC='\033[0m'
 
-# Configuración por defecto
-SCAN_INTERVAL=${SCAN_INTERVAL:-3600}  # 1 hora
+# Default configuration
+SCAN_INTERVAL=${SCAN_INTERVAL:-3600}  # 1 hour
 TARGETS_FILE=${TARGETS_FILE:-"$DATA_DIR/targets.json"}
 AUTO_SCAN=${AUTO_SCAN:-true}
 MAX_CONCURRENT=${MAX_CONCURRENT:-3}
 LOG_FILE="$LOG_DIR/daemon-$(date +%Y-%m-%d).log"
 
 # ============================================
-# FUNCIONES DE LOG
+# LOG FUNCTIONS
 # ============================================
 
 log() {
@@ -58,29 +58,29 @@ log_success() {
 }
 
 # ============================================
-# FUNCIONES DE MONITOREO
+# MONITORING FUNCTIONS
 # ============================================
 
 fetch_feed() {
-    log "Obteniendo feed de amenazas..."
+    log "Fetching threat feed..."
     curl -s "$FEED_URL" -o "$DATA_DIR/noticias.json" 2>/dev/null
     
     if [ $? -eq 0 ]; then
-        log_success "Feed actualizado"
+        log_success "Feed updated"
         return 0
     else
-        log_error "Error al obtener feed"
+        log_error "Error fetching feed"
         return 1
     fi
 }
 
 detect_new_threats() {
-    log "Detectando nuevas amenazas..."
+    log "Detecting new threats..."
     
-    # Obtener ID más reciente
+    # Get most recent ID
     CURRENT_ID=$(cat "$DATA_DIR/noticias.json" | jq -r '.[0].id')
     
-    # Verificar último check
+    # Verify last check
     if [ -f "$LAST_CHECK" ]; then
         LAST_ID=$(cat "$LAST_CHECK")
     else
@@ -89,18 +89,18 @@ detect_new_threats() {
     fi
     
     if [ "$CURRENT_ID" != "$LAST_ID" ]; then
-        log "Nuevas amenazas detectadas (IDs: $LAST_ID -> $CURRENT_ID)"
+        log "New threats detected (IDs: $LAST_ID -> $CURRENT_ID)"
         
-        # Extraer amenazas nuevas críticas/alta
+        # Extract new critical/high threats
         NEW_THREATS=$(cat "$DATA_DIR/noticias.json" | jq -r "
             [.[] | select(.id > $LAST_ID and (.severidad == \"CRITICA\" or .severidad == \"ALTA\"))] |
             length
         ")
         
         if [ "$NEW_THREATS" -gt 0 ]; then
-            log "$NEW_THREATS nuevas amenazas críticas/alta"
+            log "$NEW_THREATS new critical/high threats"
             
-            # Guardar en cola de escaneo
+            # Save to scan queue
             cat "$DATA_DIR/noticias.json" | jq -r "
                 [.[] | select(.id > $LAST_ID and (.severidad == \"CRITICA\" or .severidad == \"ALTA\"))] |
                 [.[] | {
@@ -116,44 +116,44 @@ detect_new_threats() {
             echo "$CURRENT_ID" > "$LAST_CHECK"
             return 0
         else
-            log "Sin amenazas nuevas críticas"
+            log "No new critical threats"
             echo "$CURRENT_ID" > "$LAST_CHECK"
             return 1
         fi
     else
-        log "Sin cambios en el feed"
+        log "No changes in feed"
         return 1
     fi
 }
 
 # ============================================
-# FUNCIONES DE ESCANEO AUTOMÁTICO
+# AUTOMATIC SCAN FUNCTIONS
 # ============================================
 
 scan_target() {
     local target="$1"
     local threat_info="$2"
     
-    log "Escaneando target: $target"
+    log "Scanning target: $target"
     
-    # Crear directorio de reporte
+    # Create report directory
     local scan_dir="$REPORT_DIR/auto-scan-$(date +%Y%m%d-%H%M%S)"
     mkdir -p "$scan_dir"
     
-    # Ejecutar escaneo rápido
+    # Run quick scan
     "$SCRIPT_DIR/quickscan.sh" "$target" > "$scan_dir/quick-scan.txt" 2>&1
     
-    # Verificar si hay servicios vulnerables
+    # Check for vulnerable services
     local vulns_found=$(grep -ci "vulnerability\|vuln\|cve\|exploit" "$scan_dir/quick-scan.txt" 2>/dev/null || echo "0")
     
     if [ "$vulns_found" -gt 0 ]; then
-        log "Vulnerabilidades potenciales encontradas en $target"
+        log "Potential vulnerabilities found in $target"
         
-        # Ejecutar escaneo completo
+        # Run full scan
         "$SCRIPT_DIR/autopentest-pro.sh" "$target" > "$scan_dir/full-scan.txt" 2>&1 &
         local scan_pid=$!
         
-        # Guardar info de la amenaza
+        # Save threat info
         cat > "$scan_dir/threat-info.json" << EOF
 {
     "target": "$target",
@@ -164,10 +164,10 @@ scan_target() {
 }
 EOF
         
-        log_success "Escaneo completo iniciado (PID: $scan_pid)"
+        log_success "Full scan started (PID: $scan_pid)"
         return 0
     else
-        log "Sin vulnerabilidades detectadas en $target"
+        log "No vulnerabilities detected in $target"
         return 1
     fi
 }
@@ -183,23 +183,23 @@ auto_scan_for_threats() {
         return 0
     fi
     
-    log "Procesando cola de escaneo ($queue_length amenazas)..."
+    log "Processing scan queue ($queue_length threats)..."
     
-    # Cargar targets
+    # Load targets
     if [ ! -f "$TARGETS_FILE" ]; then
-        log "No hay targets configurados. Creando archivo de ejemplo..."
+        log "No targets configured. Creating example file..."
         create_targets_file
         return 0
     fi
     
-    # Procesar cada amenaza que necesita escaneo
+    # Process each threat that needs scanning
     cat "$SCAN_QUEUE" | jq -c '.[] | select(.necesita_escaneo == true)' | while read -r threat; do
         local threat_id=$(echo "$threat" | jq -r '.id')
         local cves=$(echo "$threat" | jq -r '.cves | join(", ")')
         
-        log "Procesando amenaza ID: $threat_id (CVEs: $cves)"
+        log "Processing threat ID: $threat_id (CVEs: $cves)"
         
-        # Escanear cada target
+        # Scan each target
         cat "$TARGETS_FILE" | jq -r '.targets[].url' | while read -r target; do
             if [ -n "$target" ]; then
                 scan_target "$target" "$threat" || true
@@ -207,9 +207,9 @@ auto_scan_for_threats() {
         done
     done
     
-    # Limpiar cola
+    # Clear queue
     echo "[]" > "$SCAN_QUEUE"
-    log_success "Cola de escaneo procesada"
+    log_success "Scan queue processed"
 }
 
 create_targets_file() {
@@ -236,52 +236,52 @@ create_targets_file() {
     }
 }
 EOF
-    log "Archivo de targets creado en $TARGETS_FILE"
-    log "Edita este archivo para agregar tus targets"
+    log "Targets file created at $TARGETS_FILE"
+    log "Edit this file to add your targets"
 }
 
 # ============================================
-# FUNCIONES DE ESCANEO POR CVE
+# CVE SCAN FUNCTIONS
 # ============================================
 
 scan_for_specific_cve() {
     local cve="$1"
     local target="$2"
     
-    log "Escaneando para $cve en $target"
+    log "Scanning for $cve on $target"
     
-    # Buscar exploits para el CVE
+    # Search exploits for the CVE
     local exploit_info=$(searchsploit "$cve" 2>/dev/null | head -20 || echo "No exploits found")
     
-    # Verificar si el target es vulnerable
+    # Check if the target is vulnerable
     local scan_result="$REPORT_DIR/cve-scan-$(date +%Y%m%d-%H%M%S).md"
     
     cat > "$scan_result" << EOF
-# Escaneo CVE: $cve
+# CVE Scan: $cve
 
 **Target:** $target
-**Fecha:** $(date -Iseconds)
+**Date:** $(date -Iseconds)
 
-## Exploits Disponibles
+## Available Exploits
 
 \`\`\`
 $exploit_info
 \`\`\`
 
-## Resultado del Escaneo
+## Scan Result
 
 EOF
     
-    # Ejecutar nmap con scripts específicos
+    # Run nmap with specific scripts
     nmap -sV --script "*$cve*" "$target" >> "$scan_result" 2>/dev/null || true
     
-    log_success "Escaneo CVE completado: $scan_result"
+    log_success "CVE scan completed: $scan_result"
 }
 
 scan_critical_cves() {
-    log "Escaneando CVEs críticos recientes..."
+    log "Scanning recent critical CVEs..."
     
-    # Obtener CVEs críticos de los últimos 7 días
+    # Get critical CVEs from the last 7 days
     local critical_cves=$(cat "$DATA_DIR/noticias.json" | jq -r "
         [.[] | select(
             .severidad == \"CRITICA\" and
@@ -290,15 +290,15 @@ scan_critical_cves() {
     " 2>/dev/null | sort -u)
     
     if [ -z "$critical_cves" ]; then
-        log "Sin CVEs críticos recientes"
+        log "No recent critical CVEs"
         return 0
     fi
     
-    log "CVEs críticos a escanear:"
+    log "Critical CVEs to scan:"
     echo "$critical_cves" | while read -r cve; do
         echo "  - $cve"
         
-        # Escanear cada target
+        # Scan each target
         if [ -f "$TARGETS_FILE" ]; then
             cat "$TARGETS_FILE" | jq -r '.targets[].url' | while read -r target; do
                 if [ -n "$target" ]; then
@@ -310,13 +310,13 @@ scan_critical_cves() {
 }
 
 # ============================================
-# FUNCIONES DE INTEGRACIÓN
+# INTEGRATION FUNCTIONS
 # ============================================
 
 update_registry_with_threats() {
-    log "Actualizando registry con nuevas amenazas..."
+    log "Updating registry with new threats..."
     
-    # Extraer herramientas mencionadas en amenazas
+    # Extract tools mentioned in threats
     local new_tools=$(cat "$DATA_DIR/noticias.json" | jq -r "
         [.[] | select(.severidad == \"CRITICA\" or .severidad == \"ALTA\")] |
         .[].resumen | scan(\"(metasploit|sqlmap|nmap|hydra|burp|nuclei|gobuster)\") | 
@@ -324,42 +324,42 @@ update_registry_with_threats() {
     " 2>/dev/null)
     
     if [ -n "$new_tools" ]; then
-        log "Herramientas relevantes detectadas: $new_tools"
+        log "Relevant tools detected: $new_tools"
     fi
 }
 
 generate_daily_brief() {
-    log "Generando brief diario..."
+    log "Generating daily brief..."
     
     local brief_file="$REPORT_DIR/daily-brief-$(date +%Y-%m-%d).md"
     
     cat > "$brief_file" << 'EOF'
-# Brief Diario de Amenazas
+# Daily Threat Brief
 
-**Fecha:** DATE_PLACEHOLDER
+**Date:** DATE_PLACEHOLDER
 
 ---
 
-## Resumen
+## Summary
 
 EOF
     
-    # Agregar estadísticas
+    # Add statistics
     local stats=$(cat "$DATA_DIR/noticias.json" | jq -r "
-        \"| Métrica | Valor |\n|---------|-------|\n\",
-        \"| Total noticias | \([.[]] | length) |\n\",
-        \"| Críticas | \([.[] | select(.severidad == \"CRITICA\")] | length) |\n\",
-        \"| Alta | \([.[] | select(.severidad == \"ALTA\")] | length) |\n\",
-        \"| Media | \([.[] | select(.severidad == \"MEDIA\")] | length) |\n\",
-        \"| Con CVEs | \([.[] | select(.iocs.cve | length > 0)] | length) |\n\"
+        \"| Metric | Value |\n|---------|-------|\n\",
+        \"| Total news items | \([.[]] | length) |\n\",
+        \"| Critical | \([.[] | select(.severidad == \"CRITICA\")] | length) |\n\",
+        \"| High | \([.[] | select(.severidad == \"ALTA\")] | length) |\n\",
+        \"| Medium | \([.[] | select(.severidad == \"MEDIA\")] | length) |\n\",
+        \"| With CVEs | \([.[] | select(.iocs.cve | length > 0)] | length) |\n\"
     ")
     
     echo "$stats" >> "$brief_file"
     
-    # Agregar CVEs críticos
+    # Add critical CVEs
     cat >> "$brief_file" << 'EOF'
 
-## CVEs Críticos Recientes
+## Recent Critical CVEs
 
 EOF
     
@@ -368,27 +368,27 @@ EOF
         "- **\(.titulo)**: \(.iocs.cve | join(", "))\n  \(.resumen[0:150])...\n"
     ' >> "$brief_file" 2>/dev/null
     
-    # Agregar acciones tomadas
+    # Add actions taken
     cat >> "$brief_file" << 'EOF'
 
-## Acciones Automáticas
+## Automatic Actions
 
-- Escaneos ejecutados contra targets
-- IOCs exportados para bloqueo
-- Registry de herramientas actualizado
+- Scans executed against targets
+- IOCs exported for blocking
+- Tools registry updated
 
 ---
 
-*Generado automáticamente por Threat Intel Daemon*
+*Automatically generated by Threat Intel Daemon*
 EOF
     
     sed -i "s/DATE_PLACEHOLDER/$(date -Iseconds)/" "$brief_file"
     
-    log_success "Brief diario generado: $brief_file"
+    log_success "Daily brief generated: $brief_file"
 }
 
 # ============================================
-# FUNCIONES DE NOTIFICACIÓN
+# NOTIFICATION FUNCTIONS
 # ============================================
 
 send_notification() {
@@ -396,12 +396,12 @@ send_notification() {
     local severity="$2"
     
     # Log
-    log "NOTIFICACIÓN [$severity]: $message"
+    log "NOTIFICATION [$severity]: $message"
     
-    # Guardar en archivo de notificaciones
+    # Save to notification file
     echo "[$(date -Iseconds)] [$severity] $message" >> "$LOG_DIR/notifications.log"
     
-    # Aquí puedes agregar integración con:
+    # Here you can add integration with:
     # - Telegram bot
     # - Discord webhook
     # - Email
@@ -415,7 +415,7 @@ notify_critical_threat() {
     local severity=$(echo "$threat_info" | jq -r '.severidad')
     local cves=$(echo "$threat_info" | jq -r '.cves | join(", ")')
     
-    send_notification "NUEVA AMENAZA CRÍTICA: $title (CVEs: $cves)" "CRITICAL"
+    send_notification "NEW CRITICAL THREAT: $title (CVEs: $cves)" "CRITICAL"
 }
 
 # ============================================
@@ -433,10 +433,10 @@ show_banner() {
     if [ -f "$TARGETS_FILE" ]; then
         cat "$TARGETS_FILE" | jq -r '.targets[] | "  - \(.name): \(.url)"' 2>/dev/null
     else
-        echo "  (No configurado - ejecuta: $0 setup)"
+        echo "  (Not configured - run: $0 setup)"
     fi
     echo ""
-    echo -e "${YELLOW}Intervalo:${NC} ${SCAN_INTERVAL}s"
+    echo -e "${YELLOW}Interval:${NC} ${SCAN_INTERVAL}s"
     echo -e "${YELLOW}Log:${NC} $LOG_FILE"
     echo ""
 }
@@ -444,42 +444,42 @@ show_banner() {
 run_daemon() {
     show_banner
     
-    log "Iniciando daemon..."
+    log "Starting daemon..."
     
     while true; do
-        log "=== Ciclo de verificación ==="
+        log "=== Check cycle ==="
         
-        # 1. Obtener feed
+        # 1. Fetch feed
         fetch_feed || true
         
-        # 2. Detectar nuevas amenazas
+        # 2. Detect new threats
         if detect_new_threats; then
-            # 3. Notificar amenazas críticas
+            # 3. Notify critical threats
             cat "$SCAN_QUEUE" | jq -c '.[] | select(.severidad == "CRITICA")' 2>/dev/null | while read -r threat; do
                 notify_critical_threat "$threat"
             done
             
-            # 4. Ejecutar escaneos automáticos
+            # 4. Run automatic scans
             if [ "$AUTO_SCAN" = "true" ]; then
                 auto_scan_for_threats
             fi
         fi
         
-        # 5. Escanear CVEs críticos periódicamente
+        # 5. Scan critical CVEs periodically
         scan_critical_cves
         
-        # 6. Generar brief diario (una vez al día)
+        # 6. Generate daily brief (once per day)
         if [ "$(date +%H)" = "08" ] && [ ! -f "$REPORT_DIR/daily-brief-$(date +%Y-%m-%d).md" ]; then
             generate_daily_brief
         fi
         
-        log "Próximo ciclo en ${SCAN_INTERVAL}s"
+        log "Next cycle in ${SCAN_INTERVAL}s"
         sleep "$SCAN_INTERVAL"
     done
 }
 
 # ============================================
-# PUNTO DE ENTRADA
+# ENTRY POINT
 # ============================================
 
 case "${1:-daemon}" in
@@ -494,22 +494,22 @@ case "${1:-daemon}" in
         ;;
     setup)
         create_targets_file
-        echo -e "${GREEN}[✓] Configuración inicial completada${NC}"
-        echo -e "${YELLOW}Edita $TARGETS_FILE para agregar tus targets${NC}"
+        echo -e "${GREEN}[✓] Initial setup completed${NC}"
+        echo -e "${YELLOW}Edit $TARGETS_FILE to add your targets${NC}"
         ;;
     status)
-        echo -e "${CYAN}=== Estado del Daemon ===${NC}"
-        echo "Último check: $(cat "$LAST_CHECK" 2>/dev/null || echo 'Nunca')"
+        echo -e "${CYAN}=== Daemon Status ===${NC}"
+        echo "Last check: $(cat "$LAST_CHECK" 2>/dev/null || echo 'Never')"
         echo "Targets: $(cat "$TARGETS_FILE" | jq '.targets | length' 2>/dev/null || echo '0')"
-        echo "Cola de escaneo: $(cat "$SCAN_QUEUE" | jq 'length' 2>/dev/null || echo '0')"
-        echo "Log actual: $LOG_FILE"
+        echo "Scan queue: $(cat "$SCAN_QUEUE" | jq 'length' 2>/dev/null || echo '0')"
+        echo "Current log: $LOG_FILE"
         ;;
     *)
-        echo "Uso: $0 [daemon|once|setup|status]"
+        echo "Usage: $0 [daemon|once|setup|status]"
         echo ""
-        echo "  daemon  - Ejecutar daemon en loop (default)"
-        echo "  once    - Ejecutar una sola vez"
-        echo "  setup   - Configurar targets iniciales"
-        echo "  status  - Ver estado del daemon"
+        echo "  daemon  - Run daemon in loop (default)"
+        echo "  once    - Run once"
+        echo "  setup   - Configure initial targets"
+        echo "  status  - View daemon status"
         ;;
 esac

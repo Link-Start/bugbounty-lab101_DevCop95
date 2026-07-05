@@ -2,10 +2,10 @@
 # ============================================
 # Burp Suite GUI Automation
 # ============================================
-# Controla Burp Suite mediante capturas de pantalla,
-# clicks y movimientos de mouse/teclado.
+# Controls Burp Suite through screenshots,
+# clicks and mouse/keyboard movements.
 #
-# Uso: ./burp_auto.sh <comando> [opciones]
+# Usage: ./burp_auto.sh <command> [options]
 # ============================================
 
 set -e
@@ -21,23 +21,23 @@ SCREENSHOTS_DIR="$SCRIPT_DIR/screenshots"
 mkdir -p "$SCREENSHOTS_DIR"
 
 # ============================================
-# FUNCIONES AUXILIARES
+# HELPER FUNCTIONS
 # ============================================
 
-# Tomar captura de pantalla
+# Take screenshot
 take_screenshot() {
     local name="${1:-screenshot_$(date +%Y%m%d_%H%M%S)}"
     scrot "$SCREENSHOTS_DIR/${name}.png" 2>/dev/null
-    echo -e "${GREEN}[✓] Captura: $SCREENSHOTS_DIR/${name}.png${NC}"
+    echo -e "${GREEN}[✓] Screenshot: $SCREENSHOTS_DIR/${name}.png${NC}"
 }
 
-# Buscar ventana por nombre
+# Find window by name
 find_window() {
     local title="$1"
     xdotool search --name "$title" 2>/dev/null | head -1
 }
 
-# Activar ventana
+# Activate window
 activate_window() {
     local wid="$1"
     if [ -n "$wid" ]; then
@@ -49,7 +49,7 @@ activate_window() {
     return 1
 }
 
-# Click en coordenadas
+# Click at coordinates
 click_at() {
     local x="$1"
     local y="$2"
@@ -70,7 +70,7 @@ double_click_at() {
     sleep 0.5
 }
 
-# Escribir texto
+# Type text
 type_text() {
     local text="$1"
     local delay="${2:-0.05}"
@@ -78,7 +78,7 @@ type_text() {
     sleep 0.3
 }
 
-# Pegar desde clipboard
+# Paste from clipboard
 paste_text() {
     local text="$1"
     echo -n "$text" | xclip -selection clipboard
@@ -86,39 +86,39 @@ paste_text() {
     sleep 0.3
 }
 
-# Presionar tecla
+# Press key
 press_key() {
     local key="$1"
     xdotool key "$key"
     sleep 0.2
 }
 
-# Buscar texto en pantalla usando OCR (si está disponible)
+# Find text on screen using OCR (if available)
 find_text_on_screen() {
     local text="$1"
     local screenshot="$SCREENSHOTS_DIR/current.png"
     
-    # Tomar captura
+    # Take screenshot
     scrot "$screenshot" 2>/dev/null
     
-    # Buscar texto usando tesseract (si está disponible)
+    # Find text using tesseract (if available)
     if command -v tesseract &>/dev/null; then
         tesseract "$screenshot" stdout 2>/dev/null | grep -n "$text" | head -5
     else
-        echo -e "${YELLOW}[!] tesseract no instalado para OCR${NC}"
+        echo -e "${YELLOW}[!] tesseract not installed for OCR${NC}"
         return 1
     fi
 }
 
 # ============================================
-# COMANDOS DE BURP SUITE
+# BURP SUITE COMMANDS
 # ============================================
 
-# Lanzar Burp Suite
+# Launch Burp Suite
 launch_burp() {
-    echo -e "${YELLOW}[→] Lanzando Burp Suite...${NC}"
+    echo -e "${YELLOW}[→] Launching Burp Suite...${NC}"
     
-    # Buscar Burp Suite
+    # Find Burp Suite
     BURP_PATHS=(
         "/usr/bin/burpsuite"
         "/opt/BurpSuiteCommunity/burpsuite"
@@ -132,27 +132,27 @@ launch_burp() {
             "$path" &
             sleep 5
             take_screenshot "burp_launched"
-            echo -e "${GREEN}[✓] Burp Suite lanzado${NC}"
+            echo -e "${GREEN}[✓] Burp Suite launched${NC}"
             return 0
         fi
     done
     
-    # Intentar con comando
+    # Try with command
     if command -v burpsuite &>/dev/null; then
         burpsuite &
         sleep 5
         take_screenshot "burp_launched"
-        echo -e "${GREEN}[✓] Burp Suite lanzado${NC}"
+        echo -e "${GREEN}[✓] Burp Suite launched${NC}"
         return 0
     fi
     
-    echo -e "${RED}[✗] No se encontró Burp Suite${NC}"
+    echo -e "${RED}[✗] Burp Suite not found${NC}"
     return 1
 }
 
-# Esperar a que Burp esté listo
+# Wait for Burp to be ready
 wait_for_burp() {
-    echo -e "${YELLOW}[→] Esperando a que Burp Suite esté listo...${NC}"
+    echo -e "${YELLOW}[→] Waiting for Burp Suite to be ready...${NC}"
     
     local max_wait=30
     local count=0
@@ -160,7 +160,7 @@ wait_for_burp() {
     while [ $count -lt $max_wait ]; do
         local wid=$(find_window "Burp Suite")
         if [ -n "$wid" ]; then
-            echo -e "${GREEN}[✓] Burp Suite está listo${NC}"
+            echo -e "${GREEN}[✓] Burp Suite is ready${NC}"
             take_screenshot "burp_ready"
             return 0
         fi
@@ -168,231 +168,231 @@ wait_for_burp() {
         ((count++))
     done
     
-    echo -e "${RED}[✗] Timeout esperando Burp Suite${NC}"
+    echo -e "${RED}[✗] Timeout waiting for Burp Suite${NC}"
     return 1
 }
 
-# Habilitar Proxy en Burp
+# Enable Proxy in Burp
 enable_proxy() {
-    echo -e "${YELLOW}[→] Habilitando Proxy en Burp...${NC}"
+    echo -e "${YELLOW}[→] Enabling Proxy in Burp...${NC}"
     
     local wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
-        echo -e "${RED}[✗] Burp Suite no encontrado${NC}"
+        echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
     fi
     
     activate_window "$wid"
     
-    # Click en tab "Proxy"
+    # Click on "Proxy" tab
     click_at 150 120
     sleep 0.5
     
-    # Click en "Options"
+    # Click on "Options"
     click_at 250 150
     sleep 0.5
     
-    # Click en "Intercept" tab
+    # Click on "Intercept" tab
     click_at 350 150
     sleep 0.5
     
-    # Click en "Intercept is on/off"
+    # Click on "Intercept is on/off"
     click_at 200 300
     sleep 0.5
     
     take_screenshot "proxy_enabled"
-    echo -e "${GREEN}[✓] Proxy habilitado${NC}"
+    echo -e "${GREEN}[✓] Proxy enabled${NC}"
 }
 
-# Abrir Target en Burp
+# Open Target in Burp
 open_target() {
     local url="$1"
-    echo -e "${YELLOW}[→] Abriendo $url en Burp...${NC}"
+    echo -e "${YELLOW}[→] Opening $url in Burp...${NC}"
     
     local wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
-        echo -e "${RED}[✗] Burp Suite no encontrado${NC}"
+        echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
     fi
     
     activate_window "$wid"
     
-    # Click en tab "Target"
+    # Click on "Target" tab
     click_at 50 120
     sleep 0.5
     
-    # Click en "Scope"
+    # Click on "Scope"
     click_at 100 200
     sleep 0.5
     
-    # Click en "Add"
+    # Click on "Add"
     click_at 400 250
     sleep 0.5
     
-    # Escribir URL
+    # Type URL
     type_text "$url"
     sleep 0.3
     
-    # Click en OK
+    # Click on OK
     click_at 400 350
     sleep 0.5
     
     take_screenshot "target_added"
-    echo -e "${GREEN}[✓] Target agregado: $url${NC}"
+    echo -e "${GREEN}[✓] Target added: $url${NC}"
 }
 
-# Iniciar Spider
+# Start Spider
 start_spider() {
     local url="$1"
-    echo -e "${YELLOW}[→] Iniciando Spider para $url...${NC}"
+    echo -e "${YELLOW}[→] Starting Spider for $url...${NC}"
     
     local wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
-        echo -e "${RED}[✗] Burp Suite no encontrado${NC}"
+        echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
     fi
     
     activate_window "$wid"
     
-    # Click en tab "Target"
+    # Click on "Target" tab
     click_at 50 120
     sleep 0.5
     
-    # Click derecho en la URL
-    click_at 200 250  # Click izquierdo primero
+    # Right click on the URL
+    click_at 200 250  # Left click first
     sleep 0.3
     
-    # Buscar "Spider this host"
-    # (Esto varía según la versión de Burp)
+    # Find "Spider this host"
+    # (This varies depending on the Burp version)
     
     take_screenshot "spider_started"
-    echo -e "${GREEN}[✓] Spider iniciado${NC}"
+    echo -e "${GREEN}[✓] Spider started${NC}"
 }
 
-# Iniciar Active Scan
+# Start Active Scan
 start_scan() {
     local url="$1"
-    echo -e "${YELLOW}[→] Iniciando Active Scan para $url...${NC}"
+    echo -e "${YELLOW}[→] Starting Active Scan for $url...${NC}"
     
     local wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
-        echo -e "${RED}[✗] Burp Suite no encontrado${NC}"
+        echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
     fi
     
     activate_window "$wid"
     
-    # Click en tab "Target"
+    # Click on "Target" tab
     click_at 50 120
     sleep 0.5
     
-    # Click derecho en la URL
+    # Right click on the URL
     click_at 200 250
     sleep 0.3
     
-    # Buscar "Scan"
-    # (Esto varía según la versión de Burp)
+    # Find "Scan"
+    # (This varies depending on the Burp version)
     
     take_screenshot "scan_started"
-    echo -e "${GREEN}[✓] Active Scan iniciado${NC}"
+    echo -e "${GREEN}[✓] Active Scan started${NC}"
 }
 
-# Ver Issues
+# View Issues
 view_issues() {
-    echo -e "${YELLOW}[→] Abriendo Issues...${NC}"
+    echo -e "${YELLOW}[→] Opening Issues...${NC}"
     
     local wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
-        echo -e "${RED}[✗] Burp Suite no encontrado${NC}"
+        echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
     fi
     
     activate_window "$wid"
     
-    # Click en tab "Target"
+    # Click on "Target" tab
     click_at 50 120
     sleep 0.5
     
-    # Click en "Issues"
+    # Click on "Issues"
     click_at 100 400
     sleep 0.5
     
     take_screenshot "issues_view"
-    echo -e "${GREEN}[✓] Issues mostrados${NC}"
+    echo -e "${GREEN}[✓] Issues displayed${NC}"
 }
 
-# Exportar Issues
+# Export Issues
 export_issues() {
-    echo -e "${YELLOW}[→] Exportando Issues...${NC}"
+    echo -e "${YELLOW}[→] Exporting Issues...${NC}"
     
     local wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
-        echo -e "${RED}[✗] Burp Suite no encontrado${NC}"
+        echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
     fi
     
     activate_window "$wid"
     
-    # Click en "Project"
+    # Click on "Project"
     click_at 50 50
     sleep 0.5
     
-    # Click en "Save project"
+    # Click on "Save project"
     click_at 100 100
     sleep 0.5
     
-    # Escribir nombre
+    # Type name
     type_text "burp_project_$(date +%Y%m%d)"
     sleep 0.3
     
-    # Click en Save
+    # Click on Save
     click_at 400 400
     sleep 1
     
     take_screenshot "project_saved"
-    echo -e "${GREEN}[✓] Proyecto guardado${NC}"
+    echo -e "${GREEN}[✓] Project saved${NC}"
 }
 
-# Tomar captura y analizar
+# Take screenshot and analyze
 analyze_screen() {
-    echo -e "${YELLOW}[→] Analizando pantalla...${NC}"
+    echo -e "${YELLOW}[→] Analyzing screen...${NC}"
     
     take_screenshot "analysis_$(date +%Y%m%d_%H%M%S)"
     
-    # Verificar si tesseract está disponible
+    # Check if tesseract is available
     if command -v tesseract &>/dev/null; then
         local screenshot="$SCREENSHOTS_DIR/analysis_$(date +%Y%m%d_%H%M%S).png"
         tesseract "$screenshot" stdout 2>/dev/null | head -50
     else
-        echo -e "${YELLOW}[!] Para OCR instala: sudo apt install tesseract-ocr${NC}"
+        echo -e "${YELLOW}[!] For OCR install: sudo apt install tesseract-ocr${NC}"
     fi
 }
 
-# Mostrar estado de Burp
+# Show Burp status
 show_burp_status() {
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
-    echo -e "${CYAN}  Estado de Burp Suite${NC}"
+    echo -e "${CYAN}  Burp Suite Status${NC}"
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
     
-    # Verificar si Burp está corriendo
+    # Check if Burp is running
     local burp_pid=$(pgrep -f "burpsuite" 2>/dev/null)
     if [ -n "$burp_pid" ]; then
-        echo -e "${GREEN}[✓] Burp Suite está corriendo (PID: $burp_pid)${NC}"
+        echo -e "${GREEN}[✓] Burp Suite is running (PID: $burp_pid)${NC}"
     else
-        echo -e "${RED}[✗] Burp Suite NO está corriendo${NC}"
+        echo -e "${RED}[✗] Burp Suite is NOT running${NC}"
     fi
     
-    # Verificar ventana
+    # Check window
     local wid=$(find_window "Burp Suite")
     if [ -n "$wid" ]; then
-        echo -e "${GREEN}[✓] Ventana de Burp Suite encontrada (WID: $wid)${NC}"
+        echo -e "${GREEN}[✓] Burp Suite window found (WID: $wid)${NC}"
     else
-        echo -e "${RED}[✗] Ventana de Burp Suite no encontrada${NC}"
+        echo -e "${RED}[✗] Burp Suite window not found${NC}"
     fi
     
     echo ""
-    echo -e "${CYAN}Herramientas disponibles:${NC}"
+    echo -e "${CYAN}Available tools:${NC}"
     echo "  xdotool: $(which xdotool 2>/dev/null || echo 'no')"
     echo "  scrot: $(which scrot 2>/dev/null || echo 'no')"
     echo "  xclip: $(which xclip 2>/dev/null || echo 'no')"
@@ -455,26 +455,26 @@ case "${1:-help}" in
         echo -e "${CYAN}║         Burp Suite GUI Automation - Help                    ║${NC}"
         echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
         echo ""
-        echo "Uso: $0 <comando> [opciones]"
+        echo "Usage: $0 <command> [options]"
         echo ""
-        echo "Comandos:"
-        echo "  launch              - Lanzar Burp Suite"
-        echo "  wait                - Esperar a que Burp esté listo"
-        echo "  status              - Ver estado de Burp"
-        echo "  proxy               - Habilitar Proxy"
-        echo "  target <url>        - Agregar target"
-        echo "  spider <url>        - Iniciar Spider"
-        echo "  scan <url>          - Iniciar Active Scan"
-        echo "  issues              - Ver Issues"
-        echo "  export              - Exportar proyecto"
-        echo "  screenshot [name]   - Tomar captura"
-        echo "  analyze             - Analizar pantalla"
-        echo "  click <x> <y>       - Click en coordenadas"
-        echo "  type <text>         - Escribir texto"
-        echo "  paste <text>        - Pegar texto"
-        echo "  key <key>           - Presionar tecla"
+        echo "Commands:"
+        echo "  launch              - Launch Burp Suite"
+        echo "  wait                - Wait for Burp to be ready"
+        echo "  status              - View Burp status"
+        echo "  proxy               - Enable Proxy"
+        echo "  target <url>        - Add target"
+        echo "  spider <url>        - Start Spider"
+        echo "  scan <url>          - Start Active Scan"
+        echo "  issues              - View Issues"
+        echo "  export              - Export project"
+        echo "  screenshot [name]   - Take screenshot"
+        echo "  analyze             - Analyze screen"
+        echo "  click <x> <y>       - Click at coordinates"
+        echo "  type <text>         - Type text"
+        echo "  paste <text>        - Paste text"
+        echo "  key <key>           - Press key"
         echo ""
-        echo "Ejemplos:"
+        echo "Examples:"
         echo "  $0 launch"
         echo "  $0 target https://ejemplo.com"
         echo "  $0 scan https://ejemplo.com"
