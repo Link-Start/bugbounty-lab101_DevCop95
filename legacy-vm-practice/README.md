@@ -1,38 +1,38 @@
 # Legacy VM Practice Lab
 
-Este es el lab de práctica original: VMs vulnerables locales (DVWA,
-Metasploitable 2, OWASP BWA, Windows XP/7 legacy) sobre una red Host-Only de
-VirtualBox — pensado para aprender fundamentos (SQLi, XSS, SMB, exploits
-conocidos con Metasploit) en un entorno controlado y desechable.
+This is the original practice lab: local vulnerable VMs (DVWA,
+Metasploitable 2, OWASP BWA, Windows XP/7 legacy) on a VirtualBox Host-Only
+network — designed for learning fundamentals (SQLi, XSS, SMB, known exploits
+with Metasploit) in a controlled and disposable environment.
 
-**No forma parte del flujo de bug bounty de HackerOne.** Los targets aquí son
-IPs privadas (`192.168.56.0/24`) que tú mismo levantas y controlas — no hay
-scope de programa que respetar porque no hay programa: son tuyas. Para
-trabajo real contra programas de HackerOne, usa `../bugbounty/` y
-`../programs/` en la raíz del lab.
+**It is not part of the HackerOne bug bounty workflow.** The targets here are
+private IPs (`192.168.56.0/24`) that you spin up and control yourself — there
+is no program scope to respect because there is no program: they are yours. For
+real work against HackerOne programs, use `../bugbounty/` and
+`../programs/` at the lab root.
 
-Usa esta carpeta cuando quieras practicar una técnica nueva (una clase de
-vulnerabilidad, una herramienta) sin tocar ningún target externo, antes de
-aplicarla en un programa real.
+Use this folder when you want to practice a new technique (a vulnerability
+class, a tool) without touching any external target, before applying it in a
+real program.
 
-## Estructura
+## Structure
 
 ```
 legacy-vm-practice/
 ├── docs/
-│   ├── quickstart.md              # Primer pentest guiado contra Metasploitable 2
-│   ├── network-config.md          # Configuración de red Host-Only
+│   ├── quickstart.md              # First guided pentest against Metasploitable 2
+│   ├── network-config.md          # Host-Only network configuration
 │   ├── cheatsheets/pentesting-quickref.md
 │   └── hallazgos/template-hallazgo.md
 ├── scripts/                        # download_vms.sh, setup_network.sh, start_lab.sh, verify_lab.sh
-├── targets/README.md               # Configuración de cada VM vulnerable
-├── vms/                             # VMs descargadas (vacío hasta que corras download_vms.sh)
-└── network/                         # Configuración de red generada
+├── targets/README.md               # Configuration for each vulnerable VM
+├── vms/                             # Downloaded VMs (empty until you run download_vms.sh)
+└── network/                         # Generated network configuration
 ```
 
-## Inicio rápido
+## Quick Start
 
-Los scripts asumen que estás parado dentro de esta carpeta:
+The scripts assume you are standing inside this folder:
 
 ```bash
 cd legacy-vm-practice
@@ -43,4 +43,4 @@ sudo ./scripts/setup_network.sh
 ./scripts/verify_lab.sh
 ```
 
-Ver `docs/quickstart.md` para el primer pentest guiado.
+See `docs/quickstart.md` for the first guided pentest.

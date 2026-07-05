@@ -1,48 +1,48 @@
-# [Nombre del Programa]
+# [Program Name]
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Plataforma** | HackerOne |
-| **Handle H1** | [ej. hackerone.com/nombre-programa] |
+| **Platform** | HackerOne |
+| **H1 Handle** | [e.g. hackerone.com/program-name] |
 | **Researcher** | dev101x |
-| **Estado** | [Activo/Pausado/Retirado] |
-| **Tipo** | [Public/Private/Managed/VDP] |
-| **Última revisión de scope** | [YYYY-MM-DD] |
+| **Status** | [Active/Paused/Retired] |
+| **Type** | [Public/Private/Managed/VDP] |
+| **Last scope review** | [YYYY-MM-DD] |
 
 ## In Scope
 
-- dominio-principal.com
-- api.dominio-principal.com
-- app.dominio-principal.com
+- main-domain.com
+- api.main-domain.com
+- app.main-domain.com
 
 ## Out of Scope
 
-- terceros.dominio-principal.com (proveedor externo, fuera de política)
-- staging.dominio-principal.com
+- thirdparty.main-domain.com (external provider, out of policy)
+- staging.main-domain.com
 
-## Tipos de Vulnerabilidad Excluidos
+## Excluded Vulnerability Types
 
-- [Copiar de la política del programa: p.ej. clickjacking sin impacto, self-XSS, rate limiting, etc.]
+- [Copy from the program policy: e.g. clickjacking without impact, self-XSS, rate limiting, etc.]
 
-## Reglas Especiales
+## Special Rules
 
-- [Rate limits, ventanas de testing permitidas, cuentas de prueba provistas, prohibición de pruebas destructivas, etc.]
+- [Rate limits, allowed testing windows, provided test accounts, prohibition of destructive testing, etc.]
 
-## Recompensas de Referencia
+## Reference Rewards
 
-| Severidad | Rango |
-|-----------|-------|
-| Critical  | $ |
-| High      | $ |
-| Medium    | $ |
-| Low       | $ |
+| Severity | Range |
+|----------|-------|
+| Critical | $ |
+| High     | $ |
+| Medium   | $ |
+| Low      | $ |
 
-## Reportes Enviados
+## Submitted Reports
 
-| Fecha | Título | Severidad | Estado | H1 URL |
-|-------|--------|-----------|--------|--------|
-|       |        |           |        |        |
+| Date | Title | Severity | Status | H1 URL |
+|------|-------|----------|--------|--------|
+|      |       |          |        |        |
 
-## Notas
+## Notes
 
-[Observaciones de recon, tecnologías detectadas, contactos del triage team, patrones de respuesta, etc.]
+[Recon observations, detected technologies, triage team contacts, response patterns, etc.]

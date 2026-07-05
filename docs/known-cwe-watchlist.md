@@ -1,12 +1,12 @@
-# Known-CWE Watchlist (fuente: HackerOne Hacktivity — CWE Discovery)
+# Known-CWE Watchlist (source: HackerOne Hacktivity — CWE Discovery)
 
-Ranking de clases de vulnerabilidad (CWE) por cantidad total de reportes en
-HackerOne. A diferencia de [`known-cve-watchlist.md`](known-cve-watchlist.md)
-(CVEs puntuales en productos específicos), esto es la vista de "qué tipo de
-bug es más probable encontrar" — sirve para priorizar en qué gastar tiempo
-manual cuando el recon no apunta a un producto/CVE concreto.
+Ranking of vulnerability classes (CWE) by total report count on
+HackerOne. Unlike [`known-cve-watchlist.md`](known-cve-watchlist.md)
+(specific CVEs in specific products), this is the "what type of
+bug is most likely to be found" view — useful for prioritizing where to spend
+manual time when recon doesn't point to a specific product/CVE.
 
-| Rank | CWE | Nombre | Reportes |
+| Rank | CWE | Name | Reports |
 |---|---|---|---|
 | 1 | CWE-79 | Cross-Site Scripting (XSS) | 123,455 |
 | 2 | CWE-200 | Exposure of Sensitive Information to an Unauthorized Actor | 87,610 |
@@ -34,28 +34,27 @@ manual cuando el recon no apunta a un producto/CVE concreto.
 | 24 | CWE-77 | Command Injection | 5,089 |
 | 25 | CWE-80 | Basic XSS (script-related HTML tags) | 5,036 |
 
-## Cómo aplicar esto en este lab
+## How to apply this in this lab
 
-- **Los primeros 4 (XSS, info disclosure, access control, IDOR) suman más
-  reportes que todo el resto combinado.** Si el tiempo de un engagement es
-  limitado, la revisión manual de auth/autorización (checklist de
-  `business_logic` en `bugbounty-hunter.sh`) y el chequeo sistemático de
-  parámetros/endpoints por XSS reflejado/almacenado siguen siendo lo que
-  más rinde, no las clases "exóticas".
-- **CWE-639 (IDOR) y CWE-285/CWE-284 juntas son ~104K reportes** — todo lo
-  que sea "cambiar un ID/parámetro y ver si accedo a algo que no debería"
-  sigue siendo la mina de oro más consistente. Correlaciona directo con
-  patrones de RBAC bypass en `/file-service/static/` y con flags como
-  `withVip`/`withHidden` donde la lógica de "flag controlado por el cliente
-  que el backend no valida" es exactamente este bucket.
-- **CWE-200 (info disclosure)** es la categoría más común de hallazgos reales:
-  `issuer` OIDC filtrado, buckets S3 expuestos, Sentry DSNs, URLs de
-  Kubernetes. Es la clase más común de hallazgo que este lab produce — vale
-  la pena seguir el mismo patrón (leer JS/config inline, revisar discovery
-  docs estándar) en cada target nuevo.
-- **CWE-215 (secrets en código de debug)** — información sensible que termina
-  en algo que se loguea/cachea: `auth_secret`/`token` en URLs archivadas,
-  debug output, comentarios de código.
-- Combina con [`docs/known-cve-watchlist.md`](known-cve-watchlist.md): si
-  el fingerprinting de stack no da un producto/CVE conocido, cae de nuevo
-  a este ranking por clase para decidir dónde mirar manualmente.
+- **The top 4 (XSS, info disclosure, access control, IDOR) account for more
+  reports than everything else combined.** If engagement time is
+  limited, manual review of auth/authorization (`business_logic` checklist
+  in `bugbounty-hunter.sh`) and systematic checking of
+  parameters/endpoints for reflected/stored XSS still yields the most results, not "exotic" classes.
+- **CWE-639 (IDOR) and CWE-285/CWE-284 together are ~104K reports** — anything
+  that's "change an ID/parameter and see if I can access something I shouldn't" is
+  still the most consistent gold mine. Directly correlates with
+  RBAC bypass patterns in `/file-service/static/` and with flags like
+  `withVip`/`withHidden` where the "client-controlled flag that the
+  backend doesn't validate" logic is exactly this bucket.
+- **CWE-200 (info disclosure)** is the most common category of real findings:
+  leaked OIDC `issuer`, exposed S3 buckets, Sentry DSNs, Kubernetes
+  URLs. It's the most common finding type this lab produces — worth
+  following the same pattern (read inline JS/config, check standard
+  discovery docs) on every new target.
+- **CWE-215 (secrets in debug code)** — sensitive information that ends up
+  in something that gets logged/cached: `auth_secret`/`token` in archived
+  URLs, debug output, code comments.
+- Combine with [`docs/known-cve-watchlist.md`](known-cve-watchlist.md): if
+  stack fingerprinting doesn't match a known product/CVE, fall back to
+  this class-based ranking to decide where to look manually.

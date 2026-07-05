@@ -1,31 +1,31 @@
 # Bug Bounty Report Template
 
-## 📋 Información del Reporte
+## 📋 Report Information
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Programa** | [Nombre del programa] |
-| **Plataforma** | HackerOne |
-| **Target** | [Dominio/URL/Asset exacto listado en el scope] |
-| **Fecha** | [YYYY-MM-DD] |
-| **Investigador** | dev101x |
+| **Program** | [Program name] |
+| **Platform** | HackerOne |
+| **Target** | [Exact domain/URL/asset listed in scope] |
+| **Date** | [YYYY-MM-DD] |
+| **Researcher** | dev101x |
 | **Severity** | [Critical/High/Medium/Low/Info] |
-| **Weakness (H1 taxonomy)** | [ej. CWE-79: Cross-site Scripting (XSS)] |
-| **H1 Report URL** | [Se completa post-envío: hackerone.com/reports/XXXXXX] |
-| **Duplicado verificado en Hacktivity** | [Sí/No — ver docs/hackerone-workflow.md] |
+| **Weakness (H1 taxonomy)** | [e.g. CWE-79: Cross-site Scripting (XSS)] |
+| **H1 Report URL** | [Completed after submission: hackerone.com/reports/XXXXXX] |
+| **Duplicate verified in Hacktivity** | [Yes/No — see docs/hackerone-workflow.md] |
 
 ---
 
-## 🎯 Resumen Ejecutivo
+## 🎯 Executive Summary
 
-[Descripción breve del hallazgo en 2-3 oraciones]
+[Brief description of the finding in 2-3 sentences]
 
 ---
 
-## 🔍 Detalles de la Vulnerabilidad
+## 🔍 Vulnerability Details
 
-### Tipo
-[Ej: SQL Injection, XSS, SSRF, IDOR, etc.]
+### Type
+[e.g: SQL Injection, XSS, SSRF, IDOR, etc.]
 
 ### CWE
 [CWE-XXX]
@@ -38,67 +38,67 @@
 
 ---
 
-## 📝 Pasos para Reproducir
+## 📝 Steps to Reproduce
 
-### 1. Pre-requisitos
+### 1. Prerequisites
 ```
-[Qué se necesita para reproducir]
-```
-
-### 2. Pasos detallados
-
-**Paso 1: [Descripción]**
-```
-[Acción a realizar]
+[What is needed to reproduce]
 ```
 
-**Paso 2: [Descripción]**
+### 2. Detailed steps
+
+**Step 1: [Description]**
 ```
-[Acción a realizar]
+[Action to perform]
 ```
 
-**Paso 3: [Descripción]**
+**Step 2: [Description]**
 ```
-[Acción a realizar]
-```
-
-### 3. Resultado esperado
-```
-[Qué debería pasar]
+[Action to perform]
 ```
 
-### 4. Resultado actual (con el bug)
+**Step 3: [Description]**
 ```
-[Qué pasa con la vulnerabilidad]
+[Action to perform]
+```
+
+### 3. Expected result
+```
+[What should happen]
+```
+
+### 4. Actual result (with the bug)
+```
+[What happens with the vulnerability]
 ```
 
 ---
 
-## 💥 Impacto
+## 💥 Impact
 
-### Confidencialidad
-[Alto/Medio/Bajo - Descripción]
+### Confidentiality
+[High/Medium/Low - Description]
 
-### Integridad
-[Alto/Medio/Bajo - Descripción]
+### Integrity
+[High/Medium/Low - Description]
 
-### Disponibilidad
-[Alto/Medio/Bajo - Descripción]
+### Availability
+[High/Medium/Low - Description]
 
-### Impacto en el Negocio
-[Descripción del impacto business]
+### Business Impact
+[Description of business impact]
 
 ---
 
-## 📸 Evidencia
+## 📸 Evidence
 
 ### Screenshots
-[Adjuntar screenshots relevantes]
+[Attach relevant screenshots]
 
 ### PoC Code
 ```python
 # Proof of Concept code
-[ Código que demuestra la vulnerabilidad ]
+[ Code demonstrating the vulnerability ]
 ```
 
 ### HTTP Request/Response
@@ -117,48 +117,48 @@ HTTP/1.1 200 OK
 
 ---
 
-## 🔧 Recomendación de Corrección
+## 🔧 Remediation Recommendation
 
 ### Short-term Fix
-[Corrección rápida inmediata]
+[Quick immediate fix]
 
 ### Long-term Fix
-[Corrección completa a largo plazo]
+[Complete long-term fix]
 
 ### Code Example
 ```php
-// Ejemplo de código seguro
-[ Código corregido ]
+// Secure code example
+[ Corrected code ]
 ```
 
 ---
 
-## 📚 Referencias
+## 📚 References
 
-- [OWASP - Tipo de vulnerabilidad]
+- [OWASP - Vulnerability type]
 - [CWE - CWE-XXX]
-- [CVE - Si aplica]
-- [Documentación oficial]
+- [CVE - If applicable]
+- [Official documentation]
 
 ---
 
-## 📝 Notas Adicionales
+## 📝 Additional Notes
 
-[Información extra relevante]
+[Extra relevant information]
 
 ---
 
 ## ✅ Checklist
 
-- [ ] He verificado que la vulnerabilidad es reproducible
-- [ ] He documentado todos los pasos claramente
-- [ ] He incluido evidencia suficiente
-- [ ] He evaluado el impacto correctamente
-- [ ] He sugerido una corrección
-- [ ] No he ejecutado acciones destructivas
-- [ ] He respetado los límites del programa (`programs/<programa>.md`)
-- [ ] Busqué el hallazgo en Hacktivity/reportes públicos del programa antes de enviar
-- [ ] El título es específico (endpoint + tipo de vuln), no genérico
+- [ ] I have verified that the vulnerability is reproducible
+- [ ] I have documented all steps clearly
+- [ ] I have included sufficient evidence
+- [ ] I have assessed the impact correctly
+- [ ] I have suggested a fix
+- [ ] I have not performed destructive actions
+- [ ] I have respected the program limits (`programs/<program>.md`)
+- [ ] I searched for the finding in Hacktivity/program public reports before submitting
+- [ ] The title is specific (endpoint + vuln type), not generic
 
 ---
 

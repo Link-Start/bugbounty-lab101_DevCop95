@@ -1,6 +1,6 @@
-# Configuración de Red del Lab
+# Lab Network Configuration
 
-## Topología de Red
+## Network Topology
 
 ```
                     INTERNET
@@ -8,7 +8,7 @@
                         │ (NAT)
                         │
     ┌───────────────────┴───────────────────┐
-    │              TU MÁQUINA                │
+    │              YOUR MACHINE              │
     │              Kali Linux                │
     │           192.168.56.100               │
     └───────────────────┬───────────────────┘
@@ -16,7 +16,7 @@
                         │ (Host-Only)
                         │
     ┌───────────────────┴───────────────────┐
-    │         RED HOST-ONLY                  │
+    │         HOST-ONLY NETWORK              │
     │         192.168.56.0/24                │
     │                                        │
     │  ┌─────────┐  ┌─────────┐  ┌────────┐ │
@@ -31,33 +31,33 @@
     └────────────────────────────────────────┘
 ```
 
-## Asignación de IPs
+## IP Assignment
 
-| Dispositivo | IP | Servicios |
+| Device | IP | Services |
 |-------------|-----|-----------|
-| Kali Linux | 192.168.56.100 | Herramientas de pentesting |
+| Kali Linux | 192.168.56.100 | Pentesting tools |
 | Metasploitable 2 | 192.168.56.200 | FTP, SSH, HTTP, SMB, MySQL, etc. |
 | DVWA | 192.168.56.201 | Apache, MySQL, PHP |
-| OWASP BWA | 192.168.56.202 | Múltiples apps web vulnerables |
+| OWASP BWA | 192.168.56.202 | Multiple vulnerable web apps |
 | Windows XP | 192.168.56.203 | SMB, RDP |
 | Debian Server | 192.168.56.204 | Apache, SSH, FTP |
 
-## Configuración en VirtualBox
+## VirtualBox Configuration
 
-### Paso 1: Crear Red Host-Only
+### Step 1: Create Host-Only Network
 ```bash
-# En VirtualBox
+# In VirtualBox
 File → Host Network Manager → Create
-# Nota el nombre de la interfaz (ej: vboxnet0)
+# Note the interface name (e.g., vboxnet0)
 ```
 
-### Paso 2: Configurar IPs
+### Step 2: Configure IPs
 ```bash
-# Configurar interfaz Host-Only
+# Configure Host-Only interface
 sudo ifconfig vboxnet0 192.168.56.1 netmask 255.255.255.0 up
 ```
 
-### Paso 3: Configurar Cada VM
+### Step 3: Configure Each VM
 ```
 Settings → Network → Adapter 2
   Attached to: Host-Only Adapter
@@ -65,9 +65,9 @@ Settings → Network → Adapter 2
   Promiscuous Mode: Allow All
 ```
 
-## Configuración de IP Estática en Kali
+## Static IP Configuration on Kali
 
-### Editar `/etc/network/interfaces`
+### Edit `/etc/network/interfaces`
 ```
 # Interface Host-Only
 auto eth1
@@ -83,51 +83,51 @@ iface eth1 inet static
 sudo systemctl restart networking
 ```
 
-## Verificación de Red
+## Network Verification
 
 ```bash
-# Ver interfaces
+# View interfaces
 ip addr show
 
-# Ping a targets
+# Ping targets
 ping -c 3 192.168.56.200
 ping -c 3 192.168.56.201
 
-# Verificar puertos
+# Verify ports
 nmap -sn 192.168.56.0/24
 
-# Ver tráfico
+# View traffic
 sudo tcpdump -i vboxnet0
 ```
 
-## Reglas de Firewall (Opcional)
+## Firewall Rules (Optional)
 
-### Permitir solo tráfico del lab
+### Allow only lab traffic
 ```bash
-# En Kali
+# On Kali
 sudo iptables -A OUTPUT -d 192.168.56.0/24 -j ACCEPT
 sudo iptables -A OUTPUT -d 192.168.56.0/24 -j DROP
 ```
 
-### NAT para acceso a Internet
+### NAT for internet access
 ```bash
-# En Kali (si necesitas Internet en las VMs)
+# On Kali (if you need internet on the VMs)
 sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 sudo echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
 
 ## Troubleshooting
 
-### Las VMs no se ven entre sí
-1. Verificar que todas estén en Host-Only Adapter
-2. Desactivar firewall temporalmente
-3. Verificar IPs estáticas
+### VMs cannot see each other
+1. Verify that all are on Host-Only Adapter
+2. Disable firewall temporarily
+3. Verify static IPs
 
-### No hay Internet en Kali
-1. Verificar que Adapter 1 esté en NAT
-2. Verificar que eth0 tenga IP DHCP
+### No internet on Kali
+1. Verify that Adapter 1 is on NAT
+2. Verify that eth0 has a DHCP IP
 
-### Servicios no responden
-1. Verificar que el servicio esté corriendo en la VM
-2. Verificar firewall dentro de la VM
-3. Verificar que el puerto esté abierto
+### Services not responding
+1. Verify that the service is running on the VM
+2. Check the firewall inside the VM
+3. Verify that the port is open

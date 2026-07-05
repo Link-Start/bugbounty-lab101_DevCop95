@@ -1,9 +1,9 @@
-# Scripts del Lab
+# Lab Scripts
 
-## Scripts Disponibles
+## Available Scripts
 
 ### 1. download_vms.sh
-Script interactivo para descargar VMs vulnerables.
+Interactive script to download vulnerable VMs.
 
 ```bash
 chmod +x scripts/download_vms.sh
@@ -11,7 +11,7 @@ chmod +x scripts/download_vms.sh
 ```
 
 ### 2. setup_network.sh
-Configura la red Host-Only para el lab.
+Configures the Host-Only network for the lab.
 
 ```bash
 chmod +x scripts/setup_network.sh
@@ -19,7 +19,7 @@ sudo ./scripts/setup_network.sh
 ```
 
 ### 3. start_lab.sh
-Inicia todas las VMs del lab.
+Starts all lab VMs.
 
 ```bash
 chmod +x scripts/start_lab.sh
@@ -27,56 +27,56 @@ chmod +x scripts/start_lab.sh
 ```
 
 ### 4. verify_lab.sh
-Verifica el estado de todas las VMs.
+Verifies the status of all VMs.
 
 ```bash
 chmod +x scripts/verify_lab.sh
 ./scripts/verify_lab.sh
 ```
 
-## Inicio Rápido
+## Quick Start
 
 ```bash
-# 1. Dar permisos a todos los scripts
+# 1. Grant permissions to all scripts
 chmod +x scripts/*.sh
 
-# 2. Configurar red
+# 2. Configure network
 sudo ./scripts/setup_network.sh
 
-# 3. Descargar VMs
+# 3. Download VMs
 ./scripts/download_vms.sh
 
-# 4. Iniciar lab
+# 4. Start lab
 ./scripts/start_lab.sh
 
-# 5. Verificar
+# 5. Verify
 ./scripts/verify_lab.sh
 ```
 
-## Requisitos
+## Requirements
 
 - VirtualBox 7.x
-- Docker (opcional, para DVWA)
-- nmap (pre-instalado en Kali)
+- Docker (optional, for DVWA)
+- nmap (pre-installed on Kali)
 - curl
 
-## Solución de Problemas
+## Troubleshooting
 
-### Las VMs no se comunican
-1. Verificar que todas estén en Host-Only Adapter
-2. Desactivar firewall temporalmente
-3. Verificar IPs estáticas
+### VMs cannot communicate
+1. Verify that all are on Host-Only Adapter
+2. Disable firewall temporarily
+3. Verify static IPs
 
-### Docker no funciona
+### Docker does not work
 ```bash
 sudo systemctl start docker
 sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-### No hay Internet en Kali
+### No internet on Kali
 ```bash
-# Verificar interfaz NAT
+# Verify NAT interface
 ip addr show
 
 # Restart networking

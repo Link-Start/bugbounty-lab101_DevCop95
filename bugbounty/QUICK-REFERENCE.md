@@ -1,39 +1,39 @@
 # Bug Bounty Quick Reference Guide
 
-## 🚀 Inicio Rápido
+## 🚀 Quick Start
 
 ```bash
-# 0. Crear/actualizar el scope del programa (una vez por programa)
-./bugbounty-hunter.sh new nombre-programa
-# -> editar ../programs/nombre-programa.md con el scope real de HackerOne
+# 0. Create/update the program scope (once per program)
+./bugbounty-hunter.sh new program-name
+# -> edit ../programs/program-name.md with the real scope from HackerOne
 
-# 1. Verificar que el target está en scope antes de tocar nada
+# 1. Verify that the target is in scope before touching anything
 ./bugbounty-hunter.sh scope example.com
 
-# 1.5 Verificar que tu DNS local no está secuestrando/bloqueando el dominio
-#     (común en nichos de apuestas/adultos/streaming — ISPs redirigen a una
-#     página de advertencia en vez de resolver el sitio real)
+# 1.5 Verify that your local DNS is not hijacking/blocking the domain
+#     (common in gambling/adult/streaming niches — ISPs redirect to a
+#     warning page instead of resolving the actual site)
 ./bugbounty-hunter.sh resolve example.com
 
-# Pipeline completo
+# Full pipeline
 ./bugbounty-hunter.sh full example.com
 
-# Solo reconocimiento
+# Recon only
 ./bugbounty-hunter.sh recon example.com
 
-# Ver plataformas
+# View platforms
 ./bugbounty-hunter.sh platforms
 ```
 
-Todas las fases activas (`recon`, `vuln`, `brute`, `secrets`, `api`, `full`)
-verifican el scope automáticamente contra `../programs/*.md` y abortan si el
-target no está documentado o está marcado como *Out of Scope*.
+All active phases (`recon`, `vuln`, `brute`, `secrets`, `api`, `full`)
+automatically verify the scope against `../programs/*.md` and abort if the
+target is not documented or is marked as *Out of Scope*.
 
 ---
 
-## 🎯 Metodología de 5 Fases
+## 🎯 5-Phase Methodology
 
-### Fase 1: Reconocimiento
+### Phase 1: Reconnaissance
 ```bash
 # Subdomain enumeration
 subfinder -d target.com -o subdomains.txt
@@ -50,7 +50,7 @@ waybackurls target.com >> wayback.txt
 katana -u "https://target.com" -d 3 -jc -o js_endpoints.txt
 ```
 
-### Fase 2: Escaneo
+### Phase 2: Scanning
 ```bash
 # Nuclei - Vulnerability scanner
 echo "https://target.com" | nuclei -severity critical,high
@@ -65,7 +65,7 @@ dalfox url "https://target.com/?param=test"
 sqlmap -u "https://target.com/?id=1" --batch --level=1
 ```
 
-### Fase 3: Fuzzing
+### Phase 3: Fuzzing
 ```bash
 # Directory fuzzing
 feroxbuster -u "https://target.com" -w /usr/share/wordlists/seclists/Discovery/Web-Content/raft-large-directories.txt
@@ -77,45 +77,45 @@ ffuf -u "https://target.com/FUZZ" -w /usr/share/wordlists/seclists/Discovery/Web
 ffuf -u "https://target.com" -H "Host: FUZZ.target.com" -w subdomains.txt
 ```
 
-### Fase 4: Explotación
+### Phase 4: Exploitation
 ```bash
 # SSRF testing
 curl "https://target.com/api?url=http://169.254.169.254/latest/meta-data/"
 
 # IDOR testing
-# Cambiar IDs en URLs: /user/123 → /user/124
+# Change IDs in URLs: /user/123 → /user/124
 
 # Open redirect
-# Probar parámetros: ?next=, ?redirect=, ?url=, ?return=
+# Test parameters: ?next=, ?redirect=, ?url=, ?return=
 ```
 
-### Fase 5: Reporting
+### Phase 5: Reporting
 ```bash
-# Generar reporte
+# Generate report
 ./bugbounty-hunter.sh report example.com
 ```
 
 ---
 
-## 🏆 Tipos de Vulnerabilidades (por bounty)
+## 🏆 Vulnerability Types (by bounty)
 
 ### Critical ($5,000+)
 - Remote Code Execution (RCE)
-- SQL Injection con acceso a datos
+- SQL Injection with data access
 - Authentication bypass
 - Server-side Request Forgery (SSRF) → Internal access
 - Deserialization vulnerabilities
 
 ### High ($1,000-$5,000)
 - Stored XSS
-- IDOR con acceso a datos sensibles
-- CSRF en acciones críticas
+- IDOR with access to sensitive data
+- CSRF on critical actions
 - Open redirect → Account takeover
-- SSRF (sin acceso interno)
+- SSRF (without internal access)
 
 ### Medium ($500-$1,000)
 - Reflected XSS
-- CSRF en acciones no críticas
+- CSRF on non-critical actions
 - Information disclosure
 - Missing rate limiting
 - Session fixation
@@ -125,14 +125,14 @@ curl "https://target.com/api?url=http://169.254.169.254/latest/meta-data/"
 - Missing security headers
 - Verbose error messages
 - Clickjacking
-- Open redirect (sin impacto)
+- Open redirect (without impact)
 
 ---
 
-## 🛠️ Herramientas Esenciales
+## 🛠️ Essential Tools
 
-### Reconocimiento
-| Herramienta | Uso |
+### Reconnaissance
+| Tool | Use |
 |-------------|-----|
 | subfinder | Subdomain enumeration |
 | amass | OSINT enumeration |
@@ -142,7 +142,7 @@ curl "https://target.com/api?url=http://169.254.169.254/latest/meta-data/"
 | katana | Web crawler |
 
 ### Vulnerability Scanning
-| Herramienta | Uso |
+| Tool | Use |
 |-------------|-----|
 | nuclei | Template-based scanning |
 | dalfox | XSS scanner |
@@ -151,7 +151,7 @@ curl "https://target.com/api?url=http://169.254.169.254/latest/meta-data/"
 | feroxbuster | Directory brute |
 
 ### Exploitation
-| Herramienta | Uso |
+| Tool | Use |
 |-------------|-----|
 | curl | HTTP requests |
 | wget | File download |
@@ -160,9 +160,9 @@ curl "https://target.com/api?url=http://169.254.169.254/latest/meta-data/"
 
 ---
 
-## 📋 Checklist de Seguridad
+## 📋 Security Checklist
 
-### Headers HTTP
+### HTTP Headers
 - [ ] Strict-Transport-Security
 - [ ] X-Content-Type-Options
 - [ ] X-Frame-Options
@@ -214,22 +214,22 @@ filename:config.php target.com
 
 ### Base64 Encoding
 ```bash
-# Codificar payload
+# Encode payload
 echo -n 'etc/passwd' | base64
-# Resultado: ZXRjL3Bhc3N3ZA==
+# Result: ZXRjL3Bhc3N3ZA==
 
-# Decodificar
+# Decode
 echo 'ZXRjL3Bhc3N3ZA==' | base64 -d
 ```
 
-### Payloads Comunes
+### Common Payloads
 | Original | Base64 |
 |----------|--------|
 | `/etc/passwd` | `L2V0Yy9wYXNzd2Q=` |
 | `/etc/shadow` | `L2V0Yy9zaGFkb3c=` |
 | `../../etc/passwd` | `Li4vLi4vLi4vZXRjL3Bhc3N3ZA==` |
 
-### Uso en Ataques
+### Use in Attacks
 ```
 # LFI Bypass
 url/?f=L2V0Yy9wYXNzd2Q=        # /etc/passwd encoded
@@ -243,13 +243,13 @@ url/?f=L2V0Yy9wYXNzd2Q=        # /etc/passwd encoded
 
 ### URL Encoding
 ```bash
-# Codificar
+# Encode
 python3 -c 'import urllib.parse; print(urllib.parse.quote("<script>"))'
-# Resultado: %3Cscript%3E
+# Result: %3Cscript%3E
 
-# Doble encoding
+# Double encoding
 python3 -c 'import urllib.parse; print(urllib.parse.quote("%3Cscript%3E"))'
-# Resultado: %253Cscript%253E
+# Result: %253Cscript%253E
 ```
 
 ### Unicode Encoding
@@ -288,7 +288,7 @@ python3 -c 'import urllib.parse; print(urllib.parse.quote("%3Cscript%3E"))'
 
 ---
 
-## 📝 Plantillas de Payloads
+## 📝 Payload Templates
 
 ### XSS
 ```javascript
@@ -324,7 +324,7 @@ https://target.com/redirect?return=https://evil.com
 
 ---
 
-## 🏅 Certificaciones Relacionadas
+## 🏅 Related Certifications
 
 - **OSCP** - OffSec Certified Professional
 - **CEH** - Certified Ethical Hacker
@@ -334,9 +334,9 @@ https://target.com/redirect?return=https://evil.com
 
 ---
 
-## 📚 Recursos de Aprendizaje
+## 📚 Learning Resources
 
-### Plataformas
+### Platforms
 - [TryHackMe](https://tryhackme.com) - Learning paths
 - [HackTheBox](https://hackthebox.com) - Machines
 - [PortSwigger](https://portswigger.net/web-security) - Web security
@@ -350,4 +350,4 @@ https://target.com/redirect?return=https://evil.com
 
 ---
 
-*dev101x — Bug Bounty Framework*
+*[your-handle] — Bug Bounty Framework*

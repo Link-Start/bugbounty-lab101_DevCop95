@@ -1,66 +1,66 @@
-# Template de Hallazgos de Pentesting
+# Pentesting Findings Template
 
-## Información General
+## General Information
 
-- **Fecha:** [FECHA]
+- **Date:** [DATE]
 - **Target:** [IP/Hostname]
-- **Auditor:** [Tu nombre]
-- **Herramientas utilizadas:** [Lista de herramientas]
+- **Auditor:** [Your name]
+- **Tools used:** [List of tools]
 
-## Resumen Ejecutivo
+## Executive Summary
 
-[Descripción breve del hallazgo y su impacto]
+[Brief description of the finding and its impact]
 
-## Detalles Técnicos
+## Technical Details
 
-### Vulnerabilidad Encontrada
+### Vulnerability Found
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| **Tipo** | [SQL Injection, XSS, RCE, etc.] |
-| **Severidad** | [Crítica, Alta, Media, Baja] |
-| **CVSS** | [Puntuación si aplica] |
+| **Type** | [SQL Injection, XSS, RCE, etc.] |
+| **Severity** | [Critical, High, Medium, Low] |
+| **CVSS** | [Score if applicable] |
 | **CWE** | [CWE-89, CWE-79, etc.] |
 | **OWASP Top 10** | [A01, A02, etc.] |
 
-### Evidencia
+### Evidence
 
 ```
-[Comandos ejecutados y resultados]
-[Pasos para reproducir]
-[Screenshots si aplica]
+[Commands executed and results]
+[Steps to reproduce]
+[Screenshots if applicable]
 ```
 
-### Impacto
+### Impact
 
-- **Confidencialidad:** [Alto/Medio/Bajo/Ninguno]
-- **Integridad:** [Alto/Medio/Bajo/Ninguno]
-- **Disponibilidad:** [Alto/Medio/Bajo/Ninguno]
+- **Confidentiality:** [High/Medium/Low/None]
+- **Integrity:** [High/Medium/Low/None]
+- **Availability:** [High/Medium/Low/None]
 
-## Remediación
+## Remediation
 
-### Recomendación
+### Recommendation
 
-[Descripción de cómo corregir la vulnerabilidad]
+[Description of how to fix the vulnerability]
 
-### Prioridad
+### Priority
 
-- [ ] Crítica - Corregir inmediatamente
-- [ ] Alta - Corregir en 24-48 horas
-- [ ] Media - Corregir en 1 semana
-- [ ] Baja - Corregir en 1 mes
+- [ ] Critical — Fix immediately
+- [ ] High — Fix within 24-48 hours
+- [ ] Medium — Fix within 1 week
+- [ ] Low — Fix within 1 month
 
-## Referencias
+## References
 
-- [OWASP - Enlace relevante]
-- [CWE - Enlace relevante]
-- [CVE - Si aplica]
+- [OWASP — Relevant link]
+- [CWE — Relevant link]
+- [CVE — If applicable]
 
-## Evidencia Adicional
+## Additional Evidence
 
-[Links a screenshots, logs, o archivos adicionales]
+[Links to screenshots, logs, or additional files]
 
 ---
 
-**Firma del Auditor:** ______________________
-**Fecha:** _______________
+**Auditor Signature:** ______________________
+**Date:** _______________

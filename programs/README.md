@@ -1,38 +1,38 @@
 # Programs — Scope Tracker
 
-Un archivo por programa de HackerOne en el que participas. Es la fuente de verdad
-de qué se puede tocar y qué no — `bugbounty/bugbounty-hunter.sh` lee estos archivos
-antes de escanear cualquier target.
+One file per HackerOne program you participate in. It is the source of truth
+for what can be touched and what cannot — `bugbounty/bugbounty-hunter.sh` reads these files
+before scanning any target.
 
-## Por qué existe esto
+## Why this exists
 
-Testear fuera de scope en un programa de HackerOne puede significar:
-- Anulación de la recompensa aunque el hallazgo sea real.
-- Suspensión o ban del programa (o de la cuenta H1 completa).
-- En el peor caso, exposición legal si el activo no pertenece al programa.
+Testing out of scope on a HackerOne program can mean:
+- Reward cancellation even if the finding is valid.
+- Suspension or ban from the program (or the entire H1 account).
+- In the worst case, legal exposure if the asset doesn't belong to the program.
 
-Antes de lanzar cualquier escaneo, `dev101x` debe tener el scope documentado acá,
-no solo en la memoria o en una pestaña del navegador.
+Before launching any scan, `dev101x` must have the scope documented here,
+not just in memory or in a browser tab.
 
-## Uso
+## Usage
 
 ```bash
-# Crear el archivo de scope de un programa nuevo
-../bugbounty/bugbounty-hunter.sh new nombre-programa
+# Create the scope file for a new program
+../bugbounty/bugbounty-hunter.sh new program-name
 
-# Editar programs/nombre-programa.md:
-#   - Completar "In Scope" con los dominios/assets exactos de la política del programa
-#   - Completar "Out of Scope" con lo que el programa excluye explícitamente
-#   - Copiar las reglas especiales (rate limits, tipos de vuln excluidos, etc.)
+# Edit programs/program-name.md:
+#   - Fill in "In Scope" with the exact domains/assets from the program policy
+#   - Fill in "Out of Scope" with what the program explicitly excludes
+#   - Copy special rules (rate limits, excluded vuln types, etc.)
 
-# Verificar que un target está cubierto antes de escanear
+# Verify a target is covered before scanning
 ../bugbounty/bugbounty-hunter.sh scope target.com
 ```
 
-Cada archivo sigue la plantilla en [`_template.md`](_template.md).
+Each file follows the template in [`_template.md`](_template.md).
 
-## Regla de oro
+## Golden rule
 
-Si un target no aparece en ningún archivo de `programs/`, el scanner lo bloquea
-por defecto. Usar `FORCE=1` para saltarse el check es una señal de que falta
-actualizar el scope — no un flujo normal de trabajo.
+If a target doesn't appear in any file in `programs/`, the scanner blocks it
+by default. Using `FORCE=1` to skip the check is a signal that the scope needs
+updating — not a normal workflow.
