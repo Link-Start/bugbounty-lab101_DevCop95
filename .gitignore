@@ -1,0 +1,38 @@
+# ── Pentesting Lab — artefactos generados ────────────────────────────
+# Objetivo: no commitear output ruidoso de escaneo. La evidencia real
+# (reportes .md, ficheros FINDING_*.md) SÍ se versiona.
+
+# Logs y daemons
+*.log
+auto-scanner/logs/
+**/daemon-*.log
+
+# Bases de datos y caches locales
+auto-scanner/db/
+*.sqlite
+*.sqlite3
+*.db
+.cache/
+**/.cache/
+
+# Ficheros temporales
+*.tmp
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Directorios recreados automáticamente por los scripts (vacíos)
+legacy-vm-practice/vms/
+legacy-vm-practice/network/
+
+# ── OPCIONAL: volcados crudos de recon (descomenta para ignorarlos) ──
+# Estos son output regenerable de recon. Se dejan versionados por defecto
+# porque suelen ser la evidencia de un hallazgo. Descomenta si prefieres
+# mantener el repo ligero y regenerarlos con bugbounty-hunter.sh.
+#
+# bugbounty/reports/*/recon/*.json
+# bugbounty/reports/*/recon/wayback_raw.json
+# bugbounty/reports/*/recon/*_urls.txt
+# auto-scanner/threat-intel/
+# auto-scanner/reports/threat-intel-*.md
