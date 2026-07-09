@@ -13,12 +13,34 @@
 
 ### Bug Bounty Workspace for HackerOne Researchers
 
+[![Stars](https://img.shields.io/github/stars/DevCop95/bugbounty-lab101?style=for-the-badge&color=FFD700)](https://github.com/DevCop95/bugbounty-lab101/stargazers)
+[![Forks](https://img.shields.io/github/forks/DevCop95/bugbounty-lab101?style=for-the-badge&color=557C94)](https://github.com/DevCop95/bugbounty-lab101/network/members)
+[![License](https://img.shields.io/github/license/DevCop95/bugbounty-lab101?style=for-the-badge&color=00CA4E)](LICENSE)
 [![HackerOne](https://img.shields.io/badge/HackerOne-Workbench-000000?style=for-the-badge&logo=hackerone&logoColor=white)](https://hackerone.com/)
 [![Kali Linux](https://img.shields.io/badge/Kali-Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)](https://www.kali.org/)
 [![Tools](https://img.shields.io/badge/400%2B-Tools-FF6B35?style=for-the-badge)]()
 [![Scope Safe](https://img.shields.io/badge/Scope-Enforced-00CA4E?style=for-the-badge)]()
 
 </div>
+
+---
+
+## Table of Contents
+
+- [What Is This?](#what-is-this)
+- [Quick Start](#quick-start)
+- [T3MP3ST — AI-Powered War Room](#t3mp3st--ai-powered-war-room)
+- [Main Commands](#main-commands)
+- [Tool Matrix by Phase](#tool-matrix-by-phase)
+- [Tools by Category](#tools-by-category-auto-scanner--support-arsenal)
+- [Report Example](#report-example-hackerone-format)
+- [Workflow](#workflow)
+- [Practice Without Touching Real Programs](#practice-without-touching-real-programs)
+- [Project Structure](#project-structure)
+- [Important Rules](#important-rules)
+- [Troubleshooting](#troubleshooting)
+- [Learning Resources](#learning-resources)
+- [Changelog](#changelog)
 
 ---
 
@@ -52,7 +74,7 @@ A workspace built around the **real bug bounty workflow on HackerOne**: choose a
 
 ### 1. Permissions
 ```bash
-cd pentesting-lab
+cd bugbounty-lab101
 chmod +x bugbounty/*.sh auto-scanner/*.sh
 ```
 
@@ -86,11 +108,15 @@ This lab integrates [T3MP3ST](https://github.com/DevCop95/T3MP3ST) as its offens
 ### Setup
 
 ```bash
-# 1. Configure API keys
+# 1. Clone T3MP3ST into the lab (it's .gitignored, separate repo)
+git clone https://github.com/DevCop95/T3MP3ST t3mp3st
+cd t3mp3st && npm install && cd ..
+
+# 2. Configure API keys
 cp t3mp3st/.env.example t3mp3st/.env
 # Edit t3mp3st/.env with your LLM provider key(s)
 
-# 2. Start the server
+# 3. Start the server
 ./start-server.sh
 # War Room → http://127.0.0.1:3333/ui/
 ```
@@ -430,6 +456,12 @@ Full list at [`docs/recursos/learning-resources.md`](docs/recursos/learning-reso
 ```
 
 </div>
+
+---
+
+## Changelog
+
+See [`CHANGELOG.md`](CHANGELOG.md) for the full list of changes.
 
 ---
 

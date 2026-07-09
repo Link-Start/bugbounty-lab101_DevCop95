@@ -16,7 +16,7 @@ declare -A TOOLS_RECON
 TOOLS_RECON[nmap]="recon|network|port_scan|service_detection|os_detection|script_scan|1-10|https://nmap.org"
 TOOLS_RECON[zmap]="recon|network|internet_scan|fast|stateless|7-10|https://zmap.io"
 TOOLS_RECON[masscan]="recon|network|port_scan|fastest|asynchronous|8-10|https://github.com/robertdavidgraham/masscan"
-TOOLS_RECON Unicornscan]="recon|network|port_scan|asynchronous|stateless|5-8|https://github.com/gvanvuuren/unicornscan"
+TOOLS_RECON[unicornscan]="recon|network|port_scan|asynchronous|stateless|5-8|https://github.com/gvanvuuren/unicornscan"
 TOOLS_RECON[netdiscover]="recon|network|arp_scan|host_discovery|passive|4-7|https://github.com/nicoz/netdiscover"
 
 # --- DNS Enumeration ---
@@ -44,7 +44,7 @@ TOOLS_RECON[theHarvester]="recon|osint|email_harvest|subdomain_find|4-8|https://
 TOOLS_RECON[recon-ng]="recon|osint|modular|web_recon|5-9|https://github.com/lanmaster53/recon-ng"
 TOOLS_RECON[amass]="recon|osint|subdomain_enum|attack_surface|6-10|https://github.com/owasp-amass/amass"
 TOOLS_RECON[spiderfoot]="recon|osint|automated|multi_source|7-10|https://github.com/smicallef/spiderfoot"
-TOOLS_RECON[ sherlock]="recon|osint|username_enum|social_media|5-8|https://github.com/sherlock-project/sherlock"
+TOOLS_RECON[sherlock]="recon|osint|username_enum|social_media|5-8|https://github.com/sherlock-project/sherlock"
 TOOLS_RECON[holehe]="recon|osint|email_check|account_exists|3-6|https://github.com/megadose/holehe"
 TOOLS_RECON[reconfpv]="recon|osint|passive|subdomain|4-7|https://github.com/saeeddhqan/ReconFPV"
 TOOLS_RECON[faraday]="recon|osint|collaborative|vuln_mgmt|6-9|https://github.com/infobyte/faraday"
@@ -166,7 +166,7 @@ TOOLS_RECON[fasttcp]="recon|network|port_scan|fast|syn|4-7|https://github.com/0x
 TOOLS_RECON[ports]="recon|network|port_scan|list|known|2-4|builtin"
 TOOLS_RECON[portscan]="recon|network|port_scan|basic|tcp|3-5|manual"
 TOOLS_RECON[randscan]="recon|network|port_scan|random|target|4-6|https://github.com/0xrawsec/randscan"
-TOOLS_RECON[c ports]="recon|network|port_scan|custom|optimized|5-8|https://github.com/crocgw9/port_scanner"
+TOOLS_RECON[c_ports]="recon|network|port_scan|custom|optimized|5-8|https://github.com/crocgw9/port_scanner"
 
 # --- Wireless Recon ---
 TOOLS_RECON[aircrack-ng]="recon|wireless|wifi|capture|crack|8-10|https://www.aircrack-ng.org"
@@ -338,7 +338,7 @@ TOOLS_EXPLOIT_WEB[dotdotpwn]="exploit_web|deserialization|php|exploit|5-7|https:
 TOOLS_EXPLOIT_WEB[phpggc]="exploit_web|deserialization|php|gadget|6-9|https://github.com/ambionics/phpggc"
 
 # --- API Testing ---
-TOOLS_EXPLOIT_WEB(arjun]="exploit_web|api|parameter|hidden|5-8|https://github.com/s0md3v/Arjun"
+TOOLS_EXPLOIT_WEB[arjun]="exploit_web|api|parameter|hidden|5-8|https://github.com/s0md3v/Arjun"
 TOOLS_EXPLOIT_WEB[postman]="exploit_web|api|testing|collection|5-8|https://www.postman.com"
 TOOLS_EXPLOIT_WEB[bruno]="exploit_web|api|testing|open_source|4-7|https://github.com/usebruno/bruno"
 

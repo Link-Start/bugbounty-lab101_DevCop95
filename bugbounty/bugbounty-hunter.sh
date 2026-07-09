@@ -3,11 +3,15 @@
 # Bug Bounty Hunter - Complete Framework
 # ============================================
 
+set -o pipefail
+
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
+
+BB_VERSION="1.1"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUGBOUNTY_DIR="$SCRIPT_DIR"
@@ -28,8 +32,8 @@ mkdir -p "$REPORTS_DIR" "$TARGETS_DIR" "$NOTES_DIR" "$PROGRAMS_DIR"
 print_banner() {
     echo -e "${CYAN}"
     echo "╔══════════════════════════════════════════════════════════════╗"
-    echo "║              BUG BOUNTY HUNTER FRAMEWORK v1.0               ║"
-    echo "║                    HackerOne · @${RESEARCHER}"
+    echo "║          BUG BOUNTY HUNTER FRAMEWORK v${BB_VERSION}              ║"
+    printf "║          HackerOne · @%-36s║\n" "${RESEARCHER}"
     echo "╚══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
 }
@@ -155,15 +159,18 @@ resolve_check() {
     # also close port 443 without responding — we test HTTP:80 as
     # fallback in that case instead of assuming "no response" is clean.
     local first_local="$(echo "$LOCAL_IPS" | head -1)"
-    LOCAL_PROBE=$(timeout 8 curl -s -D - -o /tmp/resolve_check_body_$$ -m 6 --resolve "$HOST:443:$first_local" "https://$HOST/" 2>/dev/null)
-    LOCAL_PROBE="$LOCAL_PROBE $(cat /tmp/resolve_check_body_$$ 2>/dev/null)"
-    rm -f /tmp/resolve_check_body_$$
+    local probe_tmp
+    probe_tmp=$(mktemp /tmp/resolve_check.XXXXXX)
+    trap "rm -f '$probe_tmp'" RETURN
+
+    LOCAL_PROBE=$(timeout 8 curl -s -D - -o "$probe_tmp" -m 6 --resolve "$HOST:443:$first_local" "https://$HOST/" 2>/dev/null)
+    LOCAL_PROBE="$LOCAL_PROBE $(cat "$probe_tmp" 2>/dev/null)"
 
     if [ -z "$LOCAL_PROBE" ] || [ "$(echo "$LOCAL_PROBE" | tr -d '[:space:]')" = "" ]; then
-        LOCAL_PROBE=$(timeout 8 curl -s -D - -o /tmp/resolve_check_body_$$ -m 6 --resolve "$HOST:80:$first_local" "http://$HOST/" 2>/dev/null)
-        LOCAL_PROBE="$LOCAL_PROBE $(cat /tmp/resolve_check_body_$$ 2>/dev/null)"
-        rm -f /tmp/resolve_check_body_$$
+        LOCAL_PROBE=$(timeout 8 curl -s -D - -o "$probe_tmp" -m 6 --resolve "$HOST:80:$first_local" "http://$HOST/" 2>/dev/null)
+        LOCAL_PROBE="$LOCAL_PROBE $(cat "$probe_tmp" 2>/dev/null)"
     fi
+    rm -f "$probe_tmp"
 
     if echo "$LOCAL_PROBE" | grep -qiE '\.gov(\.[a-z]{2})?[/"'\''>]|blocked|restricted|illegal|advertencia|coljuegos|regulat'; then
         echo -e "${RED}[!] The local IP serves/redirects to what appears to be a blocking page (.gov domain or censorship keywords).${NC}"
@@ -316,7 +323,7 @@ secrets_hunting() {
 }
 
 # ============================================
-# FASE 5: BUSINESS LOGIC
+# PHASE 5: BUSINESS LOGIC
 # ============================================
 
 business_logic() {
@@ -332,13 +339,13 @@ business_logic() {
     echo "  5. Hidden parameter manipulation"
     echo "  6. Race conditions"
     echo "  7. Mass assignment"
-    echo "  8. IDOR en endpoints no obvios"
+    echo "  8. IDOR on non-obvious endpoints"
     
     echo -e "${GREEN}[✓] Business logic checklist generated${NC}"
 }
 
 # ============================================
-# FASE 6: API TESTING
+# PHASE 6: API TESTING
 # ============================================
 
 api_testing() {
@@ -368,7 +375,7 @@ api_testing() {
 }
 
 # ============================================
-# FASE 7: CHAIN ATTACKS
+# PHASE 7: CHAIN ATTACKS
 # ============================================
 
 chain_attacks() {
@@ -400,7 +407,7 @@ generate_report() {
     mkdir -p "$OUTPUT_DIR"
     echo -e "${CYAN}[8/8] REPORT GENERATION${NC}"
 
-    cat > "$REPORT_FILE" << 'EOF'
+    cat > "$REPORT_FILE" <<EOF
 # Bug Bounty Report
 
 ## Platform
@@ -410,13 +417,13 @@ HackerOne
 [H1 program name]
 
 ## Researcher
-RESEARCHER_PLACEHOLDER
+${RESEARCHER}
 
 ## Target
-TARGET_PLACEHOLDER
+${TARGET}
 
 ## Date
-DATE_PLACEHOLDER
+$(date -Iseconds)
 
 ## H1 Report URL
 [Filled after submission - hackerone.com/reports/xxxxx]
@@ -457,16 +464,12 @@ DATE_PLACEHOLDER
 ## Appendix
 [Screenshots, logs, PoC code]
 EOF
-    
-    sed -i "s/TARGET_PLACEHOLDER/$TARGET/" "$REPORT_FILE"
-    sed -i "s/DATE_PLACEHOLDER/$(date -Iseconds)/" "$REPORT_FILE"
-    sed -i "s/RESEARCHER_PLACEHOLDER/$RESEARCHER/" "$REPORT_FILE"
 
     echo -e "${GREEN}[✓] Report generated: $REPORT_FILE${NC}"
 }
 
 # ============================================
-# PLATAFORMAS BUG BOUNTY
+# BUG BOUNTY PLATFORMS
 # ============================================
 
 show_platforms() {
@@ -486,9 +489,9 @@ show_platforms() {
     echo "  - Google VRP      - https://bughunters.google.com"
     echo "  - Apple           - https://security.apple.com"
     echo "  - Microsoft       - https://msrc.microsoft.com"
-    echo "  - Meta            - https://www.facebook.com白帽"
+    echo "  - Meta            - https://www.facebook.com/whitehat"
     echo "  - GitHub          - https://bounty.github.com"
-    echo "  - Tesla           - https://www.tesla.com白帽"
+    echo "  - Tesla           - https://bugcrowd.com/tesla"
 }
 
 # ============================================
@@ -540,7 +543,7 @@ zeroday_research() {
 }
 
 # ============================================
-# FASE 9: ENCODING BYPASS TECHNIQUES
+# PHASE 9: ENCODING BYPASS TECHNIQUES
 # ============================================
 
 encoding_bypass() {
@@ -570,7 +573,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.2] Double URL Encoding${NC}"
-    echo "  Payloads para bypass:"
+    echo "  Payloads for bypass:"
     echo ""
     echo "  Single URL encode:"
     echo "    < = %3C"
@@ -589,7 +592,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.3] Unicode Encoding${NC}"
-    echo "  Payloads para bypass:"
+    echo "  Payloads for bypass:"
     echo ""
     echo "  SQL Injection:"
     echo "    ' = \\u0027"
@@ -603,7 +606,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.4] HTML Entity Encoding${NC}"
-    echo "  Payloads para bypass:"
+    echo "  Payloads for bypass:"
     echo ""
     echo "  < = &#60; or &#x3C;"
     echo "  > = &#62; or &#x3E;"
@@ -635,7 +638,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.6] Case Manipulation${NC}"
-    echo "  Payloads para bypass:"
+    echo "  Payloads for bypass:"
     echo ""
     echo "  SQL Keywords:"
     echo "    SELECT => SeLeCt, sElEcT, sELECT"
@@ -647,7 +650,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.7] Null Byte Injection${NC}"
-    echo "  Payloads para bypass:"
+    echo "  Payloads for bypass:"
     echo ""
     echo "  LFI:"
     echo "    /etc/passwd%00"
@@ -656,7 +659,7 @@ encoding_bypass() {
     echo ""
     
     echo -e "${YELLOW}[9.8] Comment Injection${NC}"
-    echo "  Payloads para bypass:"
+    echo "  Payloads for bypass:"
     echo ""
     echo "  SQL Injection:"
     echo "    ' /*!UNION*/ /*!SELECT*/ 1,2,3 --"
@@ -688,6 +691,16 @@ encoding_bypass() {
 # ============================================
 # MAIN
 # ============================================
+
+# Handle --help and --version before banner
+case "${1:-}" in
+    --version|-V)
+        echo "bugbounty-hunter ${BB_VERSION}"
+        exit 0
+        ;;
+    --help|-h)
+        ;& # fall through to help
+esac
 
 print_banner
 
@@ -747,7 +760,6 @@ case "${1:-help}" in
         api_testing "$TARGET"
         business_logic "$TARGET"
         chain_attacks "$TARGET"
-        encoding_bypass "$TARGET"
         generate_report "$TARGET"
         ;;
     *)

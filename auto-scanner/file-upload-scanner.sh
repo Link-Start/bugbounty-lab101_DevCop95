@@ -8,6 +8,7 @@ CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m'
 
 if [ $# -eq 0 ]; then
@@ -202,7 +203,7 @@ HTML_PAYLOADS=(
 for payload in "${HTML_PAYLOADS[@]}"; do
     FILE="$TMPDIR/$payload"
     if [ -f "$FILE" ]; then
-        echo -e "${CYAN}  Probando: $payload${NC}"
+        echo -e "${CYAN}  Testing: $payload${NC}"
         
         for ct in "text/html" "image/svg+xml" "application/octet-stream"; do
             RESP=$(curl -s -o /dev/null -w "%{http_code}" \
@@ -237,7 +238,7 @@ SVG_PAYLOADS=(
 for payload in "${SVG_PAYLOADS[@]}"; do
     FILE="$TMPDIR/$payload"
     if [ -f "$FILE" ]; then
-        echo -e "${CYAN}  Probando: $payload${NC}"
+        echo -e "${CYAN}  Testing: $payload${NC}"
         
         for ct in "image/svg+xml" "text/html" "application/octet-stream"; do
             RESP=$(curl -s -o /dev/null -w "%{http_code}" \

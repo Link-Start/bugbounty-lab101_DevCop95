@@ -63,9 +63,7 @@ log_success() {
 
 fetch_feed() {
     log "Fetching threat feed..."
-    curl -s "$FEED_URL" -o "$DATA_DIR/noticias.json" 2>/dev/null
-    
-    if [ $? -eq 0 ]; then
+    if curl -s "$FEED_URL" -o "$DATA_DIR/noticias.json" 2>/dev/null; then
         log_success "Feed updated"
         return 0
     else

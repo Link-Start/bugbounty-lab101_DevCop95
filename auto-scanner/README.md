@@ -2,22 +2,35 @@
 
 ## Description
 
-Automated pentesting system with over 100 Kali Linux tools organized by category and attack phase.
+Automated pentesting system with over 400 Kali Linux tools organized by category and attack phase.
 
 ## Structure
 
 ```
 auto-scanner/
-├── pentest.sh              # Unified command
+├── pentest.sh              # Unified command (auto-detects URLs)
 ├── autopentest.sh          # Basic scan
 ├── autopentest-pro.sh      # Pro scan (recommended)
-├── quickscan.sh            # Quick scan
-├── github-scan.sh          # GitHub scan
-├── tool-checker.sh         # Tool checker
+├── pentest-express.sh      # Express scan (~30s)
+├── quickscan.sh            # Quick scan (connectivity + headers + ports)
+├── github-scan.sh          # GitHub repository scan
+├── file-upload-scanner.sh  # File upload vulnerability scanner
+├── tool-checker.sh         # Installed tool verifier
+├── auto-scan-daemon.sh     # Threat-triggered auto-scanning daemon
+├── threat-intel-monitor.sh # Threat intelligence orchestrator
+├── threat-monitor-daemon.sh # Lightweight threat monitor
+├── lib/
+│   └── common.sh           # Shared library (colors, utils, version)
 ├── tools/
-│   └── registry.sh         # Tool database
-├── reports/                # Generated reports
-└── README.md
+│   └── registry.sh         # Tool database (400+ tools)
+├── burp-integration/
+│   ├── README.md            # Burp Suite integration docs
+│   ├── burp.sh              # Burp CLI wrapper
+│   ├── burp_api.py          # Burp REST API client
+│   └── burp_auto.sh         # Automated Burp scanning
+├── feeds/                   # Threat intelligence feeds (generated)
+├── reports/                 # Generated scan reports
+└── README.md                # This file
 ```
 
 ## Commands
@@ -25,8 +38,13 @@ auto-scanner/
 ### Full Scan (Pro)
 ```bash
 ./pentest.sh https://your-site.com
-# or
-./autopentest-pro.sh https://your-site.com
+# or explicitly:
+./pentest.sh pro https://your-site.com
+```
+
+### Express Scan
+```bash
+./pentest.sh express https://your-site.com
 ```
 
 ### Quick Scan
@@ -59,6 +77,13 @@ auto-scanner/
 ### Install Missing Tools
 ```bash
 ./pentest.sh install
+```
+
+### Threat Intelligence
+```bash
+./pentest.sh threat          # Full threat intel pipeline
+./pentest.sh daemon          # Start monitoring daemon
+./pentest.sh cve CVE-2025-XXX [target]  # Search specific CVE
 ```
 
 ## Tool Matrix by Phase
@@ -156,7 +181,7 @@ ghidra, radare2, strace, ltrace, objdump, file
 ## Risk Level by Tool
 
 | Level | Tools |
-|-------|--------------|
+|-------|--------------| 
 | Low (1-3) | nmap, dig, whois, whatweb, host |
 | Medium (4-6) | nikto, gobuster, enum4linux, hydra, john |
 | High (7-9) | sqlmap, metasploit, responder, crackmapexec |

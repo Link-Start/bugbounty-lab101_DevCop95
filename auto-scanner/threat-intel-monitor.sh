@@ -16,9 +16,10 @@ MAGENTA='\033[0;35m'
 NC='\033[0m'
 
 FEED_URL="https://raw.githubusercontent.com/DevCop95/cYHBernews/refs/heads/main/noticias.json"
-FEED_DIR="$(dirname "$0")/feeds"
-REPORT_DIR="$(dirname "$0")/reports"
-DATA_DIR="$(dirname "$0")/threat-intel"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FEED_DIR="$SCRIPT_DIR/feeds"
+REPORT_DIR="$SCRIPT_DIR/reports"
+DATA_DIR="$SCRIPT_DIR/threat-intel"
 
 mkdir -p "$FEED_DIR" "$REPORT_DIR" "$DATA_DIR"
 

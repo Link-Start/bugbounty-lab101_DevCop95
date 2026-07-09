@@ -1,0 +1,45 @@
+name: ShellCheck
+
+on:
+  push:
+    paths:
+      - '**/*.sh'
+  pull_request:
+    paths:
+      - '**/*.sh'
+
+jobs:
+  shellcheck:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          echo "=== ShellCheck Analysis ==="
+          ERRORS=0
+          while IFS= read -r -d '' script; do
+            echo "Checking: $script"
+            if ! shellcheck -x -S warning "$script"; then
+              ERRORS=$((ERRORS + 1))
+            fi
+          done < <(find . -name "*.sh" -not -path "./.git/*" -print0)
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "ShellCheck found issues in $ERRORS file(s)."
+            exit 1
+          else
+            echo ""
+            echo "All scripts passed ShellCheck."
+          fi
+
+      - name: Syntax check
+        run: |
+          echo "=== Bash Syntax Check ==="
+          find . -name "*.sh" -not -path "./.git/*" -exec bash -n {} \;
+          echo "All scripts have valid syntax."

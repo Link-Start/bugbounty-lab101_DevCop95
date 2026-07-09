@@ -7,7 +7,7 @@
 # Quick scan for when you need fast results
 # ============================================
 
-set -e
+set -eo pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -47,19 +47,19 @@ else
 fi
 
 # 2. Headers HTTP
-    echo -e "${YELLOW}[2/5]${NC} Analyzing HTTP headers..."
+echo -e "${YELLOW}[2/5]${NC} Analyzing HTTP headers..."
 echo ""
 curl -sI "$TARGET_URL" | head -15
 echo ""
 
 # 3. Puertos abiertos
-    echo -e "${YELLOW}[3/5]${NC} Scanning main ports..."
+echo -e "${YELLOW}[3/5]${NC} Scanning main ports..."
 echo ""
 nmap -sT --top-ports 20 -T4 "$TARGET_IP" 2>/dev/null | grep -E "^[0-9]+/tcp|^PORT"
 echo ""
 
 # 4. Verificar HTTPS
-    echo -e "${YELLOW}[4/5]${NC} Checking HTTPS..."
+echo -e "${YELLOW}[4/5]${NC} Checking HTTPS..."
 if echo "$TARGET_URL" | grep -q "^https"; then
     echo -e "${GREEN}  ✓ HTTPS enabled${NC}"
     
@@ -73,7 +73,7 @@ else
 fi
 
 # 5. Archivos sensibles
-    echo -e "${YELLOW}[5/5]${NC} Searching for sensitive files..."
+echo -e "${YELLOW}[5/5]${NC} Searching for sensitive files..."
 echo ""
 
 SENSITIVE=("/.env" "/.git/config" "/wp-config.php" "/phpinfo.php" "/robots.txt" "/sitemap.xml")

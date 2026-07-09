@@ -6,7 +6,7 @@
 # and recommend installation of missing ones
 # ============================================
 
-set -e
+# Note: intentionally not using set -e — bash arithmetic ((var++)) returns\n# exit code 1 when the value is 0, which would cause premature abort.
 
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'

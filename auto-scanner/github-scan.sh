@@ -10,7 +10,7 @@
 # - Insecure configurations
 # ============================================
 
-set -e
+set -eo pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -46,6 +46,11 @@ REPO_INFO=$(curl -s "$API_URL")
 
 if echo "$REPO_INFO" | grep -q '"message": "Not Found"'; then
     echo -e "${RED}  ✗ Repository not found${NC}"
+    exit 1
+fi
+
+if echo "$REPO_INFO" | grep -q '"message": "API rate limit exceeded"'; then
+    echo -e "${RED}  ✗ GitHub API rate limit exceeded. Set GITHUB_TOKEN env var for higher limits.${NC}"
     exit 1
 fi
 
@@ -161,7 +166,7 @@ for file in "${DEP_FILES[@]}"; do
     STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/$REPO/master/$file" 2>/dev/null)
     
     if [ "$STATUS" = "200" ]; then
-        echo -e "${GREEN}  ✓ $file encontrado${NC}"
+        echo -e "${GREEN}  ✓ $file found${NC}"
     fi
 done
 echo ""
@@ -176,7 +181,7 @@ for file in "${CI_FILES[@]}"; do
     STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/$REPO/master/$file" 2>/dev/null)
     
     if [ "$STATUS" = "200" ]; then
-        echo -e "${GREEN}  ✓ $file encontrado${NC}"
+        echo -e "${GREEN}  ✓ $file found${NC}"
     fi
 done
 echo ""

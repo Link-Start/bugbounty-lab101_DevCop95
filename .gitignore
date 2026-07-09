@@ -5,12 +5,12 @@
 # T3MP3ST integration (separate repo, updated via git pull in t3mp3st/)
 t3mp3st/
 
-# Logs y daemons
+# Logs and daemons
 *.log
 auto-scanner/logs/
 **/daemon-*.log
 
-# Bases de datos y caches locales
+# Local databases and caches
 auto-scanner/db/
 *.sqlite
 *.sqlite3
@@ -18,21 +18,22 @@ auto-scanner/db/
 .cache/
 **/.cache/
 
-# Ficheros temporales
+# Temporary files
 *.tmp
 *.swp
 *~
 .DS_Store
 Thumbs.db
 
-# Directorios recreados automáticamente por los scripts (vacíos)
+# Directories recreated automatically by scripts (empty)
 legacy-vm-practice/vms/
 legacy-vm-practice/network/
 
-# ── OPCIONAL: volcados crudos de recon (descomenta para ignorarlos) ──
-# Estos son output regenerable de recon. Se dejan versionados por defecto
-# porque suelen ser la evidencia de un hallazgo. Descomenta si prefieres
-# mantener el repo ligero y regenerarlos con bugbounty-hunter.sh.
+# ── OPTIONAL: raw recon dumps (uncomment to ignore them) ───────────
+# These are regenerable recon output. Left versioned by default
+# because they often serve as evidence for a finding. Uncomment if
+# you prefer keeping the repo lightweight and regenerating them
+# with bugbounty-hunter.sh.
 #
 # bugbounty/reports/*/recon/*.json
 # bugbounty/reports/*/recon/wayback_raw.json
