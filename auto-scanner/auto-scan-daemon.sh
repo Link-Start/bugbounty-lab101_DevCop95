@@ -355,7 +355,8 @@ generate_daily_brief() {
 EOF
     
     # Add statistics
-    local stats=$(cat "$DATA_DIR/noticias.json" | jq -r "
+    local stats
+    stats=$(cat "$DATA_DIR/noticias.json" | jq -r "
         \"| Metric | Value |\n|---------|-------|\n\",
         \"| Total news items | \([.[]] | length) |\n\",
         \"| Critical | \([.[] | select(.severidad == \"CRITICA\")] | length) |\n\",
