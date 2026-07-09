@@ -9,6 +9,7 @@
 # ============================================
 
 # Version
+# shellcheck disable=SC2034
 BB_VERSION="1.1"
 
 # ── Colors ──────────────────────────────────────────────────────────
@@ -53,6 +54,7 @@ safe_tmpdir() {
     local tmpdir
     tmpdir=$(mktemp -d "/tmp/${prefix}.XXXXXX")
     # Register cleanup — appends to any existing EXIT trap
+    # shellcheck disable=SC2064
     trap "rm -rf '$tmpdir'" EXIT
     echo "$tmpdir"
 }
@@ -67,6 +69,7 @@ resolve_script_dir() {
 print_banner() {
     local title="$1"
     local subtitle="${2:-}"
+    # shellcheck disable=SC2034
     local width=66
     echo -e "${CYAN}"
     echo "╔══════════════════════════════════════════════════════════════════╗"

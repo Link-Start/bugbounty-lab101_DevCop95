@@ -16,6 +16,7 @@ REPORT_DIR="$SCRIPT_DIR/reports"
 LOG_DIR="$SCRIPT_DIR/logs"
 SCAN_QUEUE="$DATA_DIR/scan_queue.json"
 LAST_CHECK="$DATA_DIR/last_check_daemon.json"
+# shellcheck disable=SC2034
 CONFIG_FILE="$SCRIPT_DIR/daemon.conf"
 
 mkdir -p "$DATA_DIR" "$REPORT_DIR" "$LOG_DIR"
@@ -25,6 +26,7 @@ CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
+# shellcheck disable=SC2034
 MAGENTA='\033[0;35m'
 NC='\033[0m'
 
@@ -40,21 +42,21 @@ LOG_FILE="$LOG_DIR/daemon-$(date +%Y-%m-%d).log"
 # ============================================
 
 log() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
-    echo "$msg" >> "$LOG_FILE"
-    echo -e "${CYAN}$msg${NC}"
+    local msg
+    msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+    echo -e "${CYAN}$msg${NC}" | tee -a "$LOG_FILE"
 }
 
 log_error() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1"
-    echo "$msg" >> "$LOG_FILE"
-    echo -e "${RED}$msg${NC}"
+    local msg
+    msg="[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1"
+    echo -e "${RED}$msg${NC}" | tee -a "$LOG_FILE"
 }
 
 log_success() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] OK: $1"
-    echo "$msg" >> "$LOG_FILE"
-    echo -e "${GREEN}$msg${NC}"
+    local msg
+    msg="[$(date '+%Y-%m-%d %H:%M:%S')] OK: $1"
+    echo -e "${GREEN}$msg${NC}" | tee -a "$LOG_FILE"
 }
 
 # ============================================
@@ -135,14 +137,16 @@ scan_target() {
     log "Scanning target: $target"
     
     # Create report directory
-    local scan_dir="$REPORT_DIR/auto-scan-$(date +%Y%m%d-%H%M%S)"
+    local scan_dir
+    scan_dir="$REPORT_DIR/auto-scan-$(date +%Y%m%d-%H%M%S)"
     mkdir -p "$scan_dir"
     
     # Run quick scan
     "$SCRIPT_DIR/quickscan.sh" "$target" > "$scan_dir/quick-scan.txt" 2>&1
     
     # Check for vulnerable services
-    local vulns_found=$(grep -ci "vulnerability\|vuln\|cve\|exploit" "$scan_dir/quick-scan.txt" 2>/dev/null || echo "0")
+    local vulns_found
+    vulns_found=$(grep -ci "vulnerability\|vuln\|cve\|exploit" "$scan_dir/quick-scan.txt" 2>/dev/null || echo "0")
     
     if [ "$vulns_found" -gt 0 ]; then
         log "Potential vulnerabilities found in $target"
@@ -175,7 +179,8 @@ auto_scan_for_threats() {
         return 0
     fi
     
-    local queue_length=$(cat "$SCAN_QUEUE" | jq 'length')
+    local queue_length
+    queue_length=$(cat "$SCAN_QUEUE" | jq 'length')
     
     if [ "$queue_length" -eq 0 ]; then
         return 0
@@ -192,8 +197,10 @@ auto_scan_for_threats() {
     
     # Process each threat that needs scanning
     cat "$SCAN_QUEUE" | jq -c '.[] | select(.necesita_escaneo == true)' | while read -r threat; do
-        local threat_id=$(echo "$threat" | jq -r '.id')
-        local cves=$(echo "$threat" | jq -r '.cves | join(", ")')
+        local threat_id
+        threat_id=$(echo "$threat" | jq -r '.id')
+        local cves
+        cves=$(echo "$threat" | jq -r '.cves | join(", ")')
         
         log "Processing threat ID: $threat_id (CVEs: $cves)"
         
@@ -249,10 +256,12 @@ scan_for_specific_cve() {
     log "Scanning for $cve on $target"
     
     # Search exploits for the CVE
-    local exploit_info=$(searchsploit "$cve" 2>/dev/null | head -20 || echo "No exploits found")
+    local exploit_info
+    exploit_info=$(searchsploit "$cve" 2>/dev/null | head -20 || echo "No exploits found")
     
     # Check if the target is vulnerable
-    local scan_result="$REPORT_DIR/cve-scan-$(date +%Y%m%d-%H%M%S).md"
+    local scan_result
+    scan_result="$REPORT_DIR/cve-scan-$(date +%Y%m%d-%H%M%S).md"
     
     cat > "$scan_result" << EOF
 # CVE Scan: $cve
@@ -280,7 +289,8 @@ scan_critical_cves() {
     log "Scanning recent critical CVEs..."
     
     # Get critical CVEs from the last 7 days
-    local critical_cves=$(cat "$DATA_DIR/noticias.json" | jq -r "
+    local critical_cves
+    critical_cves=$(cat "$DATA_DIR/noticias.json" | jq -r "
         [.[] | select(
             .severidad == \"CRITICA\" and
             (.iocs.cve | length) > 0
@@ -315,7 +325,8 @@ update_registry_with_threats() {
     log "Updating registry with new threats..."
     
     # Extract tools mentioned in threats
-    local new_tools=$(cat "$DATA_DIR/noticias.json" | jq -r "
+    local new_tools
+    new_tools=$(cat "$DATA_DIR/noticias.json" | jq -r "
         [.[] | select(.severidad == \"CRITICA\" or .severidad == \"ALTA\")] |
         .[].resumen | scan(\"(metasploit|sqlmap|nmap|hydra|burp|nuclei|gobuster)\") | 
         unique | .[]
@@ -329,7 +340,8 @@ update_registry_with_threats() {
 generate_daily_brief() {
     log "Generating daily brief..."
     
-    local brief_file="$REPORT_DIR/daily-brief-$(date +%Y-%m-%d).md"
+    local brief_file
+    brief_file="$REPORT_DIR/daily-brief-$(date +%Y-%m-%d).md"
     
     cat > "$brief_file" << 'EOF'
 # Daily Threat Brief
@@ -409,9 +421,12 @@ send_notification() {
 notify_critical_threat() {
     local threat_info="$1"
     
-    local title=$(echo "$threat_info" | jq -r '.titulo')
-    local severity=$(echo "$threat_info" | jq -r '.severidad')
-    local cves=$(echo "$threat_info" | jq -r '.cves | join(", ")')
+    local title
+    title=$(echo "$threat_info" | jq -r '.titulo')
+    local severity
+    severity=$(echo "$threat_info" | jq -r '.severidad')
+    local cves
+    cves=$(echo "$threat_info" | jq -r '.cves | join(", ")')
     
     send_notification "NEW CRITICAL THREAT: $title (CVEs: $cves)" "CRITICAL"
 }

@@ -22,7 +22,8 @@ echo ""
 # Function to start VM
 start_vm() {
     local vm_name="$1"
-    local vm_state=$(VBoxManage showvminfo "$vm_name" --machinereadable 2>/dev/null | grep "VMState=" | cut -d'"' -f2)
+    local vm_state
+    vm_state=$(VBoxManage showvminfo "$vm_name" --machinereadable 2>/dev/null | grep "VMState=" | cut -d'"' -f2)
     
     if [ "$vm_state" = "running" ]; then
         echo "[+] $vm_name is already running"

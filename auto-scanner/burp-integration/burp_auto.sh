@@ -158,7 +158,8 @@ wait_for_burp() {
     local count=0
     
     while [ $count -lt $max_wait ]; do
-        local wid=$(find_window "Burp Suite")
+        local wid
+    wid=$(find_window "Burp Suite")
         if [ -n "$wid" ]; then
             echo -e "${GREEN}[✓] Burp Suite is ready${NC}"
             take_screenshot "burp_ready"
@@ -176,7 +177,8 @@ wait_for_burp() {
 enable_proxy() {
     echo -e "${YELLOW}[→] Enabling Proxy in Burp...${NC}"
     
-    local wid=$(find_window "Burp Suite")
+    local wid
+    wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
         echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
@@ -209,7 +211,8 @@ open_target() {
     local url="$1"
     echo -e "${YELLOW}[→] Opening $url in Burp...${NC}"
     
-    local wid=$(find_window "Burp Suite")
+    local wid
+    wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
         echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
@@ -246,7 +249,8 @@ start_spider() {
     local url="$1"
     echo -e "${YELLOW}[→] Starting Spider for $url...${NC}"
     
-    local wid=$(find_window "Burp Suite")
+    local wid
+    wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
         echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
@@ -274,7 +278,8 @@ start_scan() {
     local url="$1"
     echo -e "${YELLOW}[→] Starting Active Scan for $url...${NC}"
     
-    local wid=$(find_window "Burp Suite")
+    local wid
+    wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
         echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
@@ -301,7 +306,8 @@ start_scan() {
 view_issues() {
     echo -e "${YELLOW}[→] Opening Issues...${NC}"
     
-    local wid=$(find_window "Burp Suite")
+    local wid
+    wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
         echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
@@ -325,7 +331,8 @@ view_issues() {
 export_issues() {
     echo -e "${YELLOW}[→] Exporting Issues...${NC}"
     
-    local wid=$(find_window "Burp Suite")
+    local wid
+    wid=$(find_window "Burp Suite")
     if [ -z "$wid" ]; then
         echo -e "${RED}[✗] Burp Suite not found${NC}"
         return 1
@@ -361,7 +368,8 @@ analyze_screen() {
     
     # Check if tesseract is available
     if command -v tesseract &>/dev/null; then
-        local screenshot="$SCREENSHOTS_DIR/analysis_$(date +%Y%m%d_%H%M%S).png"
+        local screenshot
+        screenshot="$SCREENSHOTS_DIR/analysis_$(date +%Y%m%d_%H%M%S).png"
         tesseract "$screenshot" stdout 2>/dev/null | head -50
     else
         echo -e "${YELLOW}[!] For OCR install: sudo apt install tesseract-ocr${NC}"
@@ -376,7 +384,8 @@ show_burp_status() {
     echo ""
     
     # Check if Burp is running
-    local burp_pid=$(pgrep -f "burpsuite" 2>/dev/null)
+    local burp_pid
+    burp_pid=$(pgrep -f "burpsuite" 2>/dev/null)
     if [ -n "$burp_pid" ]; then
         echo -e "${GREEN}[✓] Burp Suite is running (PID: $burp_pid)${NC}"
     else
@@ -384,7 +393,8 @@ show_burp_status() {
     fi
     
     # Check window
-    local wid=$(find_window "Burp Suite")
+    local wid
+    wid=$(find_window "Burp Suite")
     if [ -n "$wid" ]; then
         echo -e "${GREEN}[✓] Burp Suite window found (WID: $wid)${NC}"
     else

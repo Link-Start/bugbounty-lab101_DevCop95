@@ -5,6 +5,7 @@
 # Relational registry of categorized tools
 # Usage: source tools/registry.sh
 # ============================================
+# shellcheck disable=SC2034
 
 # ============================================
 # CATEGORY 1: RECONNAISSANCE

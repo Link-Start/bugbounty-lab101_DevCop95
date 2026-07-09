@@ -158,9 +158,11 @@ resolve_check() {
     # it's a real sinkhole, not just load balancing. A sinkhole may
     # also close port 443 without responding — we test HTTP:80 as
     # fallback in that case instead of assuming "no response" is clean.
-    local first_local="$(echo "$LOCAL_IPS" | head -1)"
-    local probe_tmp
-    probe_tmp=$(mktemp /tmp/resolve_check.XXXXXX)
+    local first_local
+    first_local="$(echo "$LOCAL_IPS" | head -1)"
+    
+    local probe_tmp="$TEMP_DIR/probe.tmp"
+    # shellcheck disable=SC2064
     trap "rm -f '$probe_tmp'" RETURN
 
     LOCAL_PROBE=$(timeout 8 curl -s -D - -o "$probe_tmp" -m 6 --resolve "$HOST:443:$first_local" "https://$HOST/" 2>/dev/null)
@@ -402,7 +404,8 @@ chain_attacks() {
 generate_report() {
     local TARGET="$1"
     local OUTPUT_DIR="$REPORTS_DIR/$TARGET"
-    local REPORT_FILE="$OUTPUT_DIR/report-$(date +%Y%m%d).md"
+    local REPORT_FILE
+    REPORT_FILE="$OUTPUT_DIR/report-$(date +%Y%m%d).md"
 
     mkdir -p "$OUTPUT_DIR"
     echo -e "${CYAN}[8/8] REPORT GENERATION${NC}"

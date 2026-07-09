@@ -133,6 +133,7 @@ done
 # Search for file input
 curl -s "$TARGET_URL" | grep -oP '<input[^>]*type=["\x27]file["\x27][^>]*>' | while read -r input; do
     echo -e "${GREEN}  ✓ File input: $input${NC}"
+    # shellcheck disable=SC2034
     UPLOAD_FOUND=1
 done
 
